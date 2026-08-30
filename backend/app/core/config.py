@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://darshini@localhost:5433/sih_platform"
     
     # Path to synthetic mock data
-    MOCK_DATA_DIR: str = "/Users/darshini/.gemini/antigravity-ide/scratch/sih-competency-platform/mock-data"
+    MOCK_DATA_DIR: str = "/Users/darshini/Desktop/sih-competency-platform/mock-data"
     
     # REDIS Config
     REDIS_HOST: str = "localhost"
