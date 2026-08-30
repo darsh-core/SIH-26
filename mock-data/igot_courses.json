@@ -1,0 +1,270 @@
+{
+  "dataset_metadata": {
+    "provider": "iGOT Karmayogi",
+    "is_synthetic": true,
+    "disclaimer": "This is a SYNTHETIC/DEMO dataset created solely for testing the SIH competency intelligence platform. It does NOT represent actual live or private courses of iGOT Karmayogi or the Government of India."
+  },
+  "courses": [
+    {
+      "code": "IGOT_COMP_STATS_01",
+      "title": "Introduction to Official Survey Design",
+      "description": "Learn the fundamentals of designing surveys, constructing questionnaires, and planning fieldwork for national census and statistical operations.",
+      "duration_minutes": 180,
+      "difficulty": "Beginner",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/survey-design-basic",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_SURVEY_DESIGN",
+          "target_level": 1,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_STATS_02",
+      "title": "Advanced Survey Design and Data Quality Control",
+      "description": "Deep dive into survey design methodologies, questionnaire validation, and implementing quality control frameworks.",
+      "duration_minutes": 360,
+      "difficulty": "Intermediate",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/survey-design-advanced",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_SURVEY_DESIGN",
+          "target_level": 3,
+          "weight": 0.8
+        },
+        {
+          "competency_code": "STAT_QUALITY",
+          "target_level": 2,
+          "weight": 0.6
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_STATS_03",
+      "title": "Sampling Techniques for Household Surveys",
+      "description": "Covers probability sampling, stratification, cluster sampling, and calculation of sampling weights.",
+      "duration_minutes": 240,
+      "difficulty": "Intermediate",
+      "language": "Hindi",
+      "url": "https://igot-demo.gov.in/courses/sampling-techniques",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_SAMPLING",
+          "target_level": 2,
+          "weight": 0.9
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_STATS_04",
+      "title": "Advanced Probability Sampling Methods",
+      "description": "Explores complex sampling methodologies, multi-stage stratified designs, estimation theory, and variance estimation.",
+      "duration_minutes": 240,
+      "difficulty": "Advanced",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/sampling-advanced",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_SAMPLING",
+          "target_level": 4,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_STATS_05",
+      "title": "Data Quality Assurance Frameworks",
+      "description": "A comprehensive analysis of statistical quality assurance models, identifying and correcting non-sampling errors.",
+      "duration_minutes": 300,
+      "difficulty": "Intermediate",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/quality-assurance",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_QUALITY",
+          "target_level": 3,
+          "weight": 0.9
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_STATS_06",
+      "title": "Metadata Standards, SDMX and DDI Compliance",
+      "description": "Learn metadata structures, designing data catalogs, and implementing international SDMX formats for statistical exchanges.",
+      "duration_minutes": 240,
+      "difficulty": "Intermediate",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/metadata-standards",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_METADATA",
+          "target_level": 3,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_TECH_01",
+      "title": "Python for Data Analysis in Public Administration",
+      "description": "Practical Python programming using Pandas, NumPy, and Matplotlib to analyze public sector data.",
+      "duration_minutes": 480,
+      "difficulty": "Beginner",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/python-public-sector",
+      "competency_mappings": [
+        {
+          "competency_code": "TECH_PYTHON",
+          "target_level": 2,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_TECH_02",
+      "title": "Database Querying with SQL",
+      "description": "Comprehensive course on writing SELECT statements, JOINs, aggregations, and subqueries.",
+      "duration_minutes": 300,
+      "difficulty": "Beginner",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/sql-basics",
+      "competency_mappings": [
+        {
+          "competency_code": "TECH_SQL",
+          "target_level": 2,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_TECH_03",
+      "title": "Advanced SQL and Database Optimization",
+      "description": "Covers performance tuning, query planning, indexing strategies, and database schema design for statisticians.",
+      "duration_minutes": 420,
+      "difficulty": "Advanced",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/sql-advanced",
+      "competency_mappings": [
+        {
+          "competency_code": "TECH_SQL",
+          "target_level": 4,
+          "weight": 0.9
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_TECH_04",
+      "title": "Advanced Python: Data Pipelines and Automation",
+      "description": "Learn to write clean code, create automated ETL pipelines, and script data integrations.",
+      "duration_minutes": 600,
+      "difficulty": "Advanced",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/python-advanced",
+      "competency_mappings": [
+        {
+          "competency_code": "TECH_PYTHON",
+          "target_level": 4,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_TECH_05",
+      "title": "Geospatial Analysis and QGIS Basics",
+      "description": "Introduction to spatial databases, geographic coordinates systems, and building map layers in QGIS.",
+      "duration_minutes": 360,
+      "difficulty": "Beginner",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/qgis-basics",
+      "competency_mappings": [
+        {
+          "competency_code": "TECH_GIS",
+          "target_level": 2,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_TECH_06",
+      "title": "Artificial Intelligence and Machine Learning in Statistics",
+      "description": "Understand linear regressions, clustering methods, random forests, and neural networks applied to economic forecasts.",
+      "duration_minutes": 540,
+      "difficulty": "Intermediate",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/ai-ml-statistics",
+      "competency_mappings": [
+        {
+          "competency_code": "TECH_AI_ML",
+          "target_level": 3,
+          "weight": 0.8
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_GOV_01",
+      "title": "Understanding Data Privacy Laws in India",
+      "description": "Introduction to the Digital Personal Data Protection (DPDP) Act, consent management, and data protection rules.",
+      "duration_minutes": 120,
+      "difficulty": "Beginner",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/dpdp-privacy",
+      "competency_mappings": [
+        {
+          "competency_code": "GOV_PRIVACY",
+          "target_level": 2,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_GOV_02",
+      "title": "Cybersecurity Fundamentals for Civil Servants",
+      "description": "Overview of threats, information security frameworks, secure browser configurations, and digital public security standards.",
+      "duration_minutes": 120,
+      "difficulty": "Beginner",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/cybersecurity-basics",
+      "competency_mappings": [
+        {
+          "competency_code": "GOV_CYBERSECURITY",
+          "target_level": 2,
+          "weight": 0.9
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_BEH_01",
+      "title": "Effective Project Management in Government Agencies",
+      "description": "Learn project lifecycle planning, resource allocation, and reporting for government schemes.",
+      "duration_minutes": 240,
+      "difficulty": "Intermediate",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/gov-project-management",
+      "competency_mappings": [
+        {
+          "competency_code": "BEH_PROJ_MGMT",
+          "target_level": 2,
+          "weight": 0.8
+        }
+      ]
+    },
+    {
+      "code": "IGOT_COMP_BEH_02",
+      "title": "Executive Leadership and Strategic Vision",
+      "description": "Covers high-level decision making, organizational alignment, conflict resolution, and motivational leadership.",
+      "duration_minutes": 180,
+      "difficulty": "Advanced",
+      "language": "English",
+      "url": "https://igot-demo.gov.in/courses/executive-leadership",
+      "competency_mappings": [
+        {
+          "competency_code": "BEH_LEADERSHIP",
+          "target_level": 4,
+          "weight": 1.0
+        }
+      ]
+    }
+  ]
+}

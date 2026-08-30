@@ -1,0 +1,170 @@
+{
+  "dataset_metadata": {
+    "provider": "National Statistical Systems Training Academy (NSSTA)",
+    "is_synthetic": true,
+    "disclaimer": "This is a SYNTHETIC/DEMO dataset created solely for testing the SIH competency intelligence platform. It does NOT represent actual live or private training schedules of NSSTA, MoSPI, or the Government of India."
+  },
+  "programs": [
+    {
+      "code": "NSSTA_PROG_STATS_01",
+      "title": "Professional Training on Sampling Design & Estimation Methods",
+      "description": "Intensive hands-on training covering mathematical sampling theories, variance estimation, and practical sampling design for national household surveys.",
+      "duration_days": 10,
+      "location": "Greater Noida, UP",
+      "mode": "OFFLINE",
+      "eligibility_criteria": "Officers in the Indian Statistical Service (ISS) or Subordinate Statistical Service (SSS) with at least 1 year of service.",
+      "tpac_recommendation": "Highly recommended by the Training Programme Advisory Committee (TPAC) for Statistical Officers prior to conducting field surveys.",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_SAMPLING",
+          "target_level": 3,
+          "weight": 1.0
+        },
+        {
+          "competency_code": "STAT_SURVEY_DESIGN",
+          "target_level": 2,
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "code": "NSSTA_PROG_STATS_02",
+      "title": "National Accounts Statistics Compilation Program",
+      "description": "Workshop on systemic compilation of Gross Domestic Product (GDP), GVA, and input-output transactions table using SNA 2008 frameworks.",
+      "duration_days": 14,
+      "location": "Greater Noida, UP",
+      "mode": "OFFLINE",
+      "eligibility_criteria": "Statistical Officers or Data Analysts working in the National Accounts Division (NAD) or Central Statistics Office (CSO).",
+      "tpac_recommendation": "Recommended by TPAC for officers involved in national income accounting.",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_NAT_ACCOUNTS",
+          "target_level": 4,
+          "weight": 0.9
+        }
+      ]
+    },
+    {
+      "code": "NSSTA_PROG_TECH_01",
+      "title": "Geospatial Analysis and GIS for Official Statistics",
+      "description": "Hands-on training using QGIS for mapping census boundaries, plotting survey clusters, and integrating GIS with socio-economic data.",
+      "duration_days": 5,
+      "location": "Hyderabad, Telangana (Regional Center)",
+      "mode": "HYBRID",
+      "eligibility_criteria": "Any statistical staff working on GIS projects, mapping, or geographic classification.",
+      "tpac_recommendation": "Approved by TPAC as a modern capability building course for mapping units.",
+      "competency_mappings": [
+        {
+          "competency_code": "TECH_GIS",
+          "target_level": 3,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "NSSTA_PROG_MGT_01",
+      "title": "Executive Leadership and Ethics in Official Statistics",
+      "description": "Focuses on strategic decision making, change management in digital transformation, and professional ethics under the Collection of Statistics Act.",
+      "duration_days": 3,
+      "location": "Greater Noida, UP",
+      "mode": "OFFLINE",
+      "eligibility_criteria": "Senior Statistical Officers, Directors, or Joint Directors with supervisory responsibilities.",
+      "tpac_recommendation": "Mandated by TPAC for promotional eligibility to Senior Administrative Grades.",
+      "competency_mappings": [
+        {
+          "competency_code": "BEH_LEADERSHIP",
+          "target_level": 4,
+          "weight": 0.8
+        },
+        {
+          "competency_code": "BEH_ETHICS",
+          "target_level": 4,
+          "weight": 1.0
+        },
+        {
+          "competency_code": "BEH_CHANGE_MGMT",
+          "target_level": 3,
+          "weight": 0.7
+        }
+      ]
+    },
+    {
+      "code": "NSSTA_PROG_STATS_03",
+      "title": "Advanced Sampling and Estimation Workshop",
+      "description": "Explores complex survey estimation models, regression estimators, calibration weighting, and correction for unit non-response.",
+      "duration_days": 5,
+      "location": "Greater Noida, UP",
+      "mode": "OFFLINE",
+      "eligibility_criteria": "Statistical Officers with at least 2 years of field survey experience.",
+      "tpac_recommendation": "Highly recommended by TPAC for research methodology enhancement.",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_SAMPLING",
+          "target_level": 4,
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "code": "NSSTA_PROG_GOV_01",
+      "title": "Cybersecurity and DPI Governance Seminar",
+      "description": "Training on security policies for government data centers, DPI architectures, and personal data safety workflows.",
+      "duration_days": 3,
+      "location": "Greater Noida, UP",
+      "mode": "HYBRID",
+      "eligibility_criteria": "All IT and statistical staff involved in web application development or hosting operations.",
+      "tpac_recommendation": "TPAC mandated training for database administrators.",
+      "competency_mappings": [
+        {
+          "competency_code": "GOV_CYBERSECURITY",
+          "target_level": 3,
+          "weight": 0.9
+        },
+        {
+          "competency_code": "GOV_DPI",
+          "target_level": 3,
+          "weight": 0.8
+        }
+      ]
+    },
+    {
+      "code": "NSSTA_PROG_TECH_02",
+      "title": "AI/ML Applications in Agricultural Surveys",
+      "description": "Deep dive program on using remote sensing data, image recognition models, and spatial ML forecasts for crop yields estimation.",
+      "duration_days": 5,
+      "location": "New Delhi (Regional Center)",
+      "mode": "OFFLINE",
+      "eligibility_criteria": "Officers in Agricultural Statistics divisions or GIS research teams.",
+      "tpac_recommendation": "Recommended by TPAC to leverage satellite imagery in crop yield analysis.",
+      "competency_mappings": [
+        {
+          "competency_code": "TECH_AI_ML",
+          "target_level": 4,
+          "weight": 1.0
+        },
+        {
+          "competency_code": "STAT_AGRICULTURE",
+          "target_level": 3,
+          "weight": 0.8
+        }
+      ]
+    },
+    {
+      "code": "NSSTA_PROG_STATS_04",
+      "title": "Official Statistics Quality Auditing Workshop",
+      "description": "Intensive training on establishing statistical quality indicators and auditing national survey operations.",
+      "duration_days": 5,
+      "location": "Greater Noida, UP",
+      "mode": "OFFLINE",
+      "eligibility_criteria": "Statistical Officers or Supervisors in Quality Assurance cells.",
+      "tpac_recommendation": "Mandatory for designation as Statistical Audit Officers.",
+      "competency_mappings": [
+        {
+          "competency_code": "STAT_QUALITY",
+          "target_level": 4,
+          "weight": 1.0
+        }
+      ]
+    }
+  ]
+}

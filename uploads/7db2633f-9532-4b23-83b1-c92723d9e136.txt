@@ -1,0 +1,1 @@
+Stratified random sampling divides the frame into strata.
