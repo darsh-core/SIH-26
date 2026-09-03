@@ -1,0 +1,4 @@
+backend/chroma_db/
+backend/test_chroma/
+__pycache__/
+*.db
