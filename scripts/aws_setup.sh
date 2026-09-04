@@ -49,13 +49,17 @@ echo "NPM version: $(npm -v)"
 
 # 4. Install pgvector for PostgreSQL
 echo "🐘 [4/7] Compiling & installing pgvector extension for PostgreSQL..."
-if [ ! -d "/tmp/pgvector" ]; then
+sudo rm -rf /tmp/pgvector
+if sudo apt-get install -y postgresql-18-pgvector 2>/dev/null || sudo apt-get install -y postgresql-pgvector 2>/dev/null; then
+    echo "✅ pgvector installed from apt package."
+else
     cd /tmp
-    git clone --branch v0.7.4 https://github.com/pgvector/pgvector.git
+    git clone https://github.com/pgvector/pgvector.git
     cd pgvector
     make
     sudo make install
     rm -rf /tmp/pgvector
+    echo "✅ pgvector compiled and installed from master branch."
 fi
 
 # Start & Enable PostgreSQL
@@ -84,15 +88,15 @@ if [ ! -d "venv" ]; then
 fi
 
 source venv/bin/activate
-pip install --upgrade pip
+pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 
 # Configure .env if not present
 if [ ! -f ".env" ]; then
     cp .env.example .env
-    # Update DB URL for server PostgreSQL
-    sed -i 's|DATABASE_URL=.*|DATABASE_URL=postgresql://sankhyai_user:sankhyai_secure_pass@localhost:5432/sih_platform|g' .env
 fi
+# Ensure DATABASE_URL points to the local EC2 postgres instance (port 5432, user sankhyai_user)
+sed -i 's|DATABASE_URL=.*|DATABASE_URL=postgresql://sankhyai_user:sankhyai_secure_pass@localhost:5432/sih_platform|g' .env
 
 # Run Database Migrations & Seeds
 echo "Running Alembic migrations..."

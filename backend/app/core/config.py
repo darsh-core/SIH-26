@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
+from pathlib import Path
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "SIH Competency Intelligence & Learning Platform"
@@ -9,7 +10,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://darshini@localhost:5433/sih_platform"
     
     # Path to synthetic mock data
-    MOCK_DATA_DIR: str = "/Users/darshini/Desktop/sih-competency-platform/mock-data"
+    MOCK_DATA_DIR: str = str(Path(__file__).resolve().parents[3] / "mock-data")
     
     # REDIS Config
     REDIS_HOST: str = "localhost"
