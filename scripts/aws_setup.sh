@@ -48,6 +48,7 @@ sudo apt-get update -y
 sudo apt-get install -y \
     python3-pip \
     python3-venv \
+    python3-psycopg2 \
     postgresql \
     postgresql-contrib \
     postgresql-server-dev-all \
@@ -101,12 +102,20 @@ echo "🐍 [5/7] Configuring Python Backend..."
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR/backend"
 
-if [ ! -d "venv" ]; then
-    python3 -m venv venv
+if [ -d "venv" ]; then
+    sed -i 's/include-system-site-packages = false/include-system-site-packages = true/g' venv/pyvenv.cfg 2>/dev/null || true
+else
+    python3 -m venv --system-site-packages venv
 fi
 
 source venv/bin/activate
 pip install --upgrade pip setuptools wheel --no-cache-dir
+
+# Allow compiling C-extensions without failing on GCC 15 strict implicit declarations
+export CFLAGS="-Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types"
+
+# Install newer psycopg2-binary or use system psycopg2
+pip install "psycopg2-binary>=2.9.10" --no-cache-dir || true
 
 # CRITICAL: Install lightweight CPU-only PyTorch first (160 MB instead of 3,500 MB CUDA bundle)
 echo "Installing lightweight CPU-only PyTorch..."
