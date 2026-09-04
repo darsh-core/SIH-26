@@ -144,9 +144,14 @@ cd "$PROJECT_DIR/frontend"
 npm install
 VITE_API_BASE_URL=/api/v1 npm run build
 
+# Grant Nginx (www-data) read and traversal permissions
+CURRENT_USER=$(whoami)
+sudo chmod 755 /home/ubuntu 2>/dev/null || true
+sudo chmod 755 "/home/$CURRENT_USER" 2>/dev/null || true
+sudo chmod -R 755 "$PROJECT_DIR/frontend/dist"
+
 # 7. Configure Nginx and Systemd Services
 echo "⚙️  [7/7] Configuring Systemd and Nginx Services..."
-CURRENT_USER=$(whoami)
 
 # Systemd Service for FastAPI
 sudo bash -c "cat > /etc/systemd/system/sankhyai-backend.service <<EOF
