@@ -11,17 +11,35 @@ echo "=========================================================="
 echo "🚀 SANKHYAI AWS Free Tier Deployment Starting..."
 echo "=========================================================="
 
-# 1. Setup 4GB Swap File (Crucial for 1GB RAM instances to prevent OOM)
+# 1. Setup Swap Memory (Dynamic 2GB or 4GB based on disk availability)
+AVAIL_ROOT_GB=$(df -BG / | awk 'NR==2 {print $4}' | tr -d 'G')
+sudo apt-get clean || true
+rm -rf ~/.cache/pip /tmp/pip* /tmp/torch* 2>/dev/null || true
+
 if [ ! -f /swapfile ]; then
-    echo "📦 [1/7] Creating 4GB Swap Memory..."
-    sudo fallocate -l 4G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
+    SWAP_SIZE="4G"
+    if [ "$AVAIL_ROOT_GB" -lt 6 ]; then
+        SWAP_SIZE="2G"
+    fi
+    echo "📦 [1/7] Creating $SWAP_SIZE Swap Memory..."
+    sudo fallocate -l $SWAP_SIZE /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
     echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-    echo "✅ Swap memory enabled: 4GB"
+    echo "✅ Swap memory enabled: $SWAP_SIZE"
 else
-    echo "ℹ️  Swapfile already exists. Skipping."
+    SWAP_BYTES=$(stat -c %s /swapfile 2>/dev/null || echo 0)
+    if [ "$SWAP_BYTES" -gt 3000000000 ] && [ "$AVAIL_ROOT_GB" -lt 4 ]; then
+        echo "⚠️  Disk space low ($AVAIL_ROOT_GB GB free). Resizing swap from 4GB to 2GB to free up 2GB disk space..."
+        sudo swapoff /swapfile || true
+        sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        echo "✅ Swap resized to 2GB. 2GB disk space recovered!"
+    else
+        echo "ℹ️  Swapfile already exists. Skipping."
+    fi
 fi
 
 # 2. Update System Packages
@@ -88,8 +106,14 @@ if [ ! -d "venv" ]; then
 fi
 
 source venv/bin/activate
-pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
+pip install --upgrade pip setuptools wheel --no-cache-dir
+
+# CRITICAL: Install lightweight CPU-only PyTorch first (160 MB instead of 3,500 MB CUDA bundle)
+echo "Installing lightweight CPU-only PyTorch..."
+pip install torch --index-url https://download.pytorch.org/whl/cpu --no-cache-dir
+
+echo "Installing backend application dependencies..."
+pip install -r requirements.txt --no-cache-dir
 
 # Configure .env if not present
 if [ ! -f ".env" ]; then
