@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime, ForeignKey, Text, Integer, func
 from sqlalchemy.dialects.postgresql import UUID, JSONB
@@ -38,7 +39,8 @@ class DocumentChunk(Base):
     text_content: Mapped[str] = mapped_column(Text, nullable=False)
     start_char: Mapped[int] = mapped_column(Integer, nullable=False)
     end_char: Mapped[int] = mapped_column(Integer, nullable=False)
-    page_number: Mapped[int] = mapped_column(Integer, nullable=True)
+    page_number: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    chunk_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
     metadata_json: Mapped[dict] = mapped_column(JSONB, nullable=True, default=dict)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -54,10 +56,10 @@ class DocumentEmbedding(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     chunk_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("document_chunk.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
-    model_name: Mapped[str] = mapped_column(String(100), nullable=False, default="text-embedding-3-small")
+    model_name: Mapped[str] = mapped_column(String(100), nullable=False, default="all-MiniLM-L6-v2")
     
-    # 1536 dimension vector for standard embeddings
-    embedding = mapped_column(Vector(1536), nullable=False)
+    # 384 dimension canonical vector for SentenceTransformer (all-MiniLM-L6-v2)
+    embedding = mapped_column(Vector(384), nullable=False)
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

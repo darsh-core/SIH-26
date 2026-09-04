@@ -1,6 +1,8 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
+from sqlalchemy.orm import Session
+from app.integrations.learning_provider import get_learning_provider
 from app.integrations.provider import MockIGOTProvider, MockNSSTAProvider
 
 class CandidateMapping(BaseModel):
@@ -26,49 +28,74 @@ class RecommendationCandidate(BaseModel):
 class CandidateRetriever:
     
     @staticmethod
-    def retrieve_candidates(comp_codes: List[str]) -> List[RecommendationCandidate]:
+    def retrieve_candidates(comp_codes: List[str], db: Optional[Session] = None) -> List[RecommendationCandidate]:
         """
         Queries abstract provider interfaces and returns a normalized candidate list
         addressing any of the target competency codes.
         """
         candidates = []
         
-        # 1. Retrieve from iGOT
-        igot_provider = MockIGOTProvider()
-        try:
-            igot_courses = igot_provider.get_courses()
-            for c in igot_courses:
-                # Check if course addresses any of the target competency codes
-                matches = [m for m in c.competency_mappings if m.competency_code in comp_codes]
-                if not matches:
-                    continue
-                
-                # Normalize difficulty
-                diff = c.difficulty.capitalize() if c.difficulty else "Beginner"
-                
-                candidates.append(
-                    RecommendationCandidate(
-                        code=c.code,
-                        title=c.title,
-                        description=c.description,
-                        provider="iGOT",
-                        difficulty=diff,
-                        language=c.language or "English",
-                        url=c.url,
-                        duration_minutes=c.duration_minutes,
-                        mode="ONLINE",
-                        competency_mappings=[
-                            CandidateMapping(
-                                competency_code=m.competency_code,
-                                target_level=m.target_level,
-                                weight=m.weight
-                            ) for m in c.competency_mappings
-                        ]
+        # 1. Retrieve from iGOT Learning Provider
+        if db is not None:
+            try:
+                learning_provider = get_learning_provider()
+                courses = learning_provider.search_courses(db, competency_codes=comp_codes)
+                for c in courses:
+                    candidates.append(
+                        RecommendationCandidate(
+                            code=c.external_course_id,
+                            title=c.title,
+                            description=c.description,
+                            provider="iGOT",
+                            difficulty=c.difficulty,
+                            language=c.language or "English",
+                            url=c.course_url,
+                            duration_minutes=c.duration_minutes,
+                            mode="ONLINE",
+                            competency_mappings=[
+                                CandidateMapping(
+                                    competency_code=m.code,
+                                    target_level=m.target_level,
+                                    weight=m.weight
+                                ) for m in c.competencies
+                            ]
+                        )
                     )
-                )
-        except Exception as e:
-            # Tolerant design for provider failures
-            print(f"Error retrieving from iGOT provider: {e}")
+            except Exception as e:
+                print(f"Error querying learning provider: {e}")
+                
+        # Fallback to MockIGOTProvider if no db candidates retrieved
+        if not candidates:
+            igot_provider = MockIGOTProvider()
+            try:
+                igot_courses = igot_provider.get_courses()
+                for c in igot_courses:
+                    matches = [m for m in c.competency_mappings if m.competency_code in comp_codes]
+                    if not matches:
+                        continue
+                    diff = c.difficulty.capitalize() if c.difficulty else "Beginner"
+                    candidates.append(
+                        RecommendationCandidate(
+                            code=c.code,
+                            title=c.title,
+                            description=c.description,
+                            provider="iGOT",
+                            difficulty=diff,
+                            language=c.language or "English",
+                            url=c.url,
+                            duration_minutes=c.duration_minutes,
+                            mode="ONLINE",
+                            competency_mappings=[
+                                CandidateMapping(
+                                    competency_code=m.competency_code,
+                                    target_level=m.target_level,
+                                    weight=m.weight
+                                ) for m in c.competency_mappings
+                            ]
+                        )
+                    )
+            except Exception as e:
+                print(f"Error retrieving from mock iGOT provider: {e}")
             
         # 2. Retrieve from NSSTA
         nssta_provider = MockNSSTAProvider()

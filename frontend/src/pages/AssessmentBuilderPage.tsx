@@ -56,7 +56,7 @@ export const AssessmentBuilderPage = () => {
                 onChange={(e) => setSelectedDocId(e.target.value)}
               >
                 <option value="">Choose a manual...</option>
-                {data?.items?.filter(d => d.status === "INDEXED").map(d => (
+                {data?.items?.filter(d => d.status === "INDEXED" || d.status === "READY").map(d => (
                   <option key={d.id} value={d.id}>{d.title} ({d.file_type})</option>
                 ))}
               </select>

@@ -111,6 +111,7 @@ class GapEngine:
                     gap=round(gap, 2),
                     normalized_gap=round(normalized_gap, 3),
                     priority=priority,
+                    priority_score=round(priority_score, 3),
                     mandatory=rc.is_mandatory,
                     weight=rc.weight
                 )

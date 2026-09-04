@@ -88,8 +88,8 @@ class EligibilityFilter:
                 if m.target_level > user_target + 1.5:
                     is_excessive = True
                     break
-                # If course targets level 4 or 5 and user is still beginner (< 1.5)
-                if m.target_level >= 4.0 and user_current < 1.5:
+                # If course targets level 4 or 5 and user is an assessed beginner (0.0 < user_current < 1.5)
+                if m.target_level >= 4.0 and 0.0 < user_current < 1.5:
                     is_excessive = True
                     break
                 # If course targets a level significantly below the user's current level (more than 1.0 below)

@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, ForeignKey, Text, Integer, Float, Date, UniqueConstraint, func
+from sqlalchemy import Column, String, DateTime, ForeignKey, Text, Integer, Float, Date, UniqueConstraint, func, Boolean
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
@@ -44,6 +44,7 @@ class Course(Base):
     course_competencies: Mapped[list["CourseCompetency"]] = relationship("CourseCompetency", back_populates="course", cascade="all, delete-orphan")
     learning_progresses: Mapped[list["LearningProgress"]] = relationship("LearningProgress", back_populates="course", cascade="all, delete-orphan")
     assessments: Mapped[list["Assessment"]] = relationship("Assessment", back_populates="course", cascade="all, delete-orphan")
+    modules: Mapped[list["CourseModule"]] = relationship("CourseModule", back_populates="course", cascade="all, delete-orphan", order_by="CourseModule.sequence_order")
 
 
 class CourseCompetency(Base):
@@ -134,3 +135,67 @@ class LearningProgress(Base):
     user: Mapped["AppUser"] = relationship("AppUser", back_populates="learning_progresses")
     course: Mapped[Course] = relationship("Course", back_populates="learning_progresses")
     training_program: Mapped[TrainingProgram] = relationship("TrainingProgram", back_populates="learning_progresses")
+    module_progresses: Mapped[list["LearningModuleProgress"]] = relationship("LearningModuleProgress", back_populates="learning_progress", cascade="all, delete-orphan")
+
+
+class CourseModule(Base):
+    __tablename__ = "course_module"
+    __table_args__ = (
+        UniqueConstraint("course_id", "code", name="uq_course_module_code"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    course_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("course.id", ondelete="CASCADE"), nullable=False, index=True)
+    code: Mapped[str] = mapped_column(String(100), nullable=False)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    sequence_order: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    duration_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=30)
+    is_required: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    metadata_json: Mapped[dict] = mapped_column(JSONB, nullable=True, default=dict)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    # Relationships
+    course: Mapped["Course"] = relationship("Course", back_populates="modules")
+    lessons: Mapped[list["CourseLesson"]] = relationship("CourseLesson", back_populates="module", cascade="all, delete-orphan", order_by="CourseLesson.sequence_order")
+    module_progresses: Mapped[list["LearningModuleProgress"]] = relationship("LearningModuleProgress", back_populates="module", cascade="all, delete-orphan")
+
+
+class CourseLesson(Base):
+    __tablename__ = "course_lesson"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    module_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("course_module.id", ondelete="CASCADE"), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    duration_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=15)
+    sequence_order: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    metadata_json: Mapped[dict] = mapped_column(JSONB, nullable=True, default=dict)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    # Relationships
+    module: Mapped["CourseModule"] = relationship("CourseModule", back_populates="lessons")
+
+
+class LearningModuleProgress(Base):
+    __tablename__ = "learning_module_progress"
+    __table_args__ = (
+        UniqueConstraint("learning_progress_id", "module_id", name="uq_learning_module_progress"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    learning_progress_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("learning_progress.id", ondelete="CASCADE"), nullable=False, index=True)
+    module_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("course_module.id", ondelete="CASCADE"), nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(50), default="NOT_STARTED", nullable=False) # NOT_STARTED, IN_PROGRESS, COMPLETED
+    completed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    # Relationships
+    learning_progress: Mapped["LearningProgress"] = relationship("LearningProgress", back_populates="module_progresses")
+    module: Mapped["CourseModule"] = relationship("CourseModule", back_populates="module_progresses")

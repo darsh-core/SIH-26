@@ -11,11 +11,16 @@ import {
   X, 
   TrendingDown, 
   HelpCircle,
-  FileText
+  FileText,
+  PlusCircle,
+  AlertTriangle,
+  ShieldCheck,
+  TrendingUp
 } from "lucide-react"
 
 import { useAuthStore } from "../../store/authStore"
 import { cn } from "../../lib/utils"
+import { CopilotDrawer } from "../copilot/CopilotDrawer"
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -32,17 +37,35 @@ export const AppShell = ({ children }: AppShellProps) => {
     navigate("/login");
   };
 
-  const navItems = [
-    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-    { name: "My Competency", path: "/competencies", icon: Award },
-    { name: "Recommendations", path: "/recommendations", icon: BookOpen },
-    { name: "Learning Plan", path: "/learning-plan", icon: Map },
-    { name: "Profile", path: "/profile", icon: User }
-  ];
+  const isTrainerOrStaff = Boolean(
+    user?.is_superuser || 
+    user?.email?.toLowerCase().includes("trainer") ||
+    user?.profile?.designation?.toLowerCase().includes("director") ||
+    user?.profile?.designation?.toLowerCase().includes("trainer") ||
+    user?.roles?.some(r => 
+      ["TRAINER", "ADMIN", "ADMINISTRATOR", "EVALUATOR", "SUPERVISOR", "MANAGER"].includes(r.name?.toUpperCase())
+    )
+  );
 
-  if (user?.is_superuser) {
-    navItems.push({ name: "Documents", path: "/documents", icon: FileText });
-  }
+  const navItems = isTrainerOrStaff
+    ? [
+        { name: "Academy Dashboard", path: "/dashboard", icon: LayoutDashboard },
+        { name: "Competency Framework", path: "/competencies", icon: Award },
+        { name: "Document Matrix", path: "/documents", icon: FileText },
+        { name: "Create Assessment", path: "/assessments/create", icon: PlusCircle },
+        { name: "Recommendations", path: "/recommendations", icon: BookOpen },
+        { name: "Profile", path: "/profile", icon: User }
+      ]
+    : [
+        { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+        { name: "Role Readiness", path: "/role-readiness", icon: ShieldCheck },
+        { name: "Skill Gaps", path: "/skill-gaps", icon: AlertTriangle },
+        { name: "iGOT Recommendations", path: "/recommendations", icon: BookOpen },
+        { name: "Learning Plan", path: "/learning-plan", icon: Map },
+        { name: "Progress & History", path: "/progress", icon: TrendingUp },
+        { name: "My Competencies", path: "/competencies", icon: Award },
+        { name: "Profile", path: "/profile", icon: User }
+      ];
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
@@ -90,11 +113,15 @@ export const AppShell = ({ children }: AppShellProps) => {
           <div className="p-6 border-b border-gov-blue-600 bg-gov-blue-600/20">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gov-blue-100 flex items-center justify-center text-gov-blue-500 font-bold shrink-0 shadow-inner">
-                {user.profile?.first_name?.charAt(0) || "U"}
+                {user.profile?.first_name?.charAt(0) || (user.email?.includes("trainer") ? "S" : "U")}
               </div>
               <div className="min-w-0">
-                <h4 className="text-sm font-semibold truncate">{user.profile?.first_name} {user.profile?.last_name}</h4>
-                <p className="text-xs text-slate-300 truncate">{user.profile?.designation || "Statistical Staff"}</p>
+                <h4 className="text-sm font-semibold truncate">
+                  {user.profile?.first_name ? `${user.profile.first_name} ${user.profile.last_name || ""}` : (user.email?.includes("trainer") ? "Dr. Sunita Sharma" : user.email)}
+                </h4>
+                <p className="text-xs text-slate-300 truncate">
+                  {user.profile?.designation || (user.email?.includes("trainer") ? "Senior Training Director · NSSTA" : "Statistical Staff")}
+                </p>
               </div>
             </div>
           </div>
@@ -172,6 +199,9 @@ export const AppShell = ({ children }: AppShellProps) => {
           {children}
         </div>
       </main>
+
+      {/* Global MoSPI AI Copilot Widget */}
+      <CopilotDrawer />
     </div>
   )
 }

@@ -24,7 +24,7 @@ export const DocumentUploadPage = () => {
         const details = await documentApi.getDocument(docId);
         setStatus(details.status);
         
-        if (details.status === "INDEXED") {
+        if (details.status === "INDEXED" || details.status === "READY") {
           setProgress(100);
           clearInterval(interval);
         } else if (details.status === "FAILED") {
@@ -75,8 +75,8 @@ export const DocumentUploadPage = () => {
   const validateAndSetFile = (selectedFile: File) => {
     setError(null);
     const ext = selectedFile.name.split(".").pop()?.toLowerCase();
-    if (!["pdf", "docx", "txt"].includes(ext || "")) {
-      setError("Unsupported file format. Please upload PDF, DOCX, or TXT.");
+    if (!["pdf", "docx", "pptx", "txt"].includes(ext || "")) {
+      setError("Unsupported file format. Please upload PDF, DOCX, PPTX, or TXT.");
       setFile(null);
       return;
     }
@@ -98,8 +98,13 @@ export const DocumentUploadPage = () => {
     try {
       const res = await documentApi.uploadDocument(file);
       setDocId(res.document_id);
-      setStatus(res.status);
-      setProgress(35);
+      if (res.is_duplicate) {
+        setStatus(res.status === "READY" || res.status === "INDEXED" ? "READY" : res.status);
+        setProgress(100);
+      } else {
+        setStatus(res.status);
+        setProgress(35);
+      }
     } catch (err: any) {
       setError(err.message || "Upload failed. Verify server is running.");
       setStatus("FAILED");
@@ -114,19 +119,19 @@ export const DocumentUploadPage = () => {
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
-        <h1 className="text-2xl font-bold text-gov-blue-900">Upload Learning Material</h1>
+        <h1 className="text-xl font-bold text-slate-800">Upload Training Material</h1>
       </div>
 
-      <Card className="p-6">
+      <Card className="p-8">
         {status === "IDLE" && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Drag drop area */}
             <div 
               onDragEnter={handleDrag}
               onDragOver={handleDrag}
               onDragLeave={handleDrag}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-lg p-10 text-center cursor-pointer transition-colors ${
+              className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
                 dragActive ? "border-gov-blue-500 bg-gov-blue-50/50" : "border-slate-300 hover:border-gov-blue-400"
               }`}
               onClick={() => document.getElementById("fileInput")?.click()}
@@ -135,12 +140,12 @@ export const DocumentUploadPage = () => {
                 id="fileInput"
                 type="file" 
                 className="hidden" 
-                accept=".pdf,.docx,.txt"
+                accept=".pdf,.docx,.pptx,.txt"
                 onChange={handleFileChange}
               />
               <Upload className="h-12 w-12 mx-auto text-slate-400 mb-4" />
               <p className="font-semibold text-slate-700">Drag & drop your training material here</p>
-              <p className="text-xs text-slate-400 mt-1">Supports PDF, DOCX, or TXT (Max 10MB)</p>
+              <p className="text-xs text-slate-400 mt-1">Supports PDF, DOCX, PPTX, or TXT (Max 10MB)</p>
             </div>
 
             {file && (

@@ -12,6 +12,9 @@ export interface UserProfile {
   designation?: string;
   department?: string;
   job_role_id?: string;
+  domain?: string;
+  contact_number?: string;
+  bio?: string;
 }
 
 export interface AppUser {

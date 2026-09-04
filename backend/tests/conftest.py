@@ -7,8 +7,14 @@ from sqlalchemy.orm import sessionmaker
 # Add backend directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# Set default test environment for providers
+os.environ["AI_PROVIDER"] = "mock"
+os.environ["EMBEDDING_PROVIDER"] = "mock"
+
 from app.core.config import settings
 from app.core.database import Base
+settings.AI_PROVIDER = "mock"
+settings.EMBEDDING_PROVIDER = "mock"
 
 # Force testing database URL on port 5433 (Homebrew)
 TEST_DATABASE_URL = "postgresql://darshini@localhost:5433/sih_test"

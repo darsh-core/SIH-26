@@ -134,6 +134,10 @@ from app.api.v1.recommendations import router as recommendations_router
 from app.api.v1.learning_plans import router as learning_plans_router
 from app.api.v1.documents import router as documents_router
 from app.api.v1.analytics import router as analytics_router
+from app.api.v1.ai import router as ai_router
+from app.api.v1.copilot import router as copilot_router
+
+from app.api.v1.learning import router as learning_router
 
 # Mount v1 routers
 app.include_router(auth_router, prefix=settings.API_V1_STR)
@@ -143,8 +147,12 @@ app.include_router(roles_router, prefix=settings.API_V1_STR)
 app.include_router(competencies_router, prefix=settings.API_V1_STR)
 app.include_router(assessments_router, prefix=settings.API_V1_STR)
 app.include_router(courses_router, prefix=settings.API_V1_STR)
+app.include_router(learning_router, prefix=settings.API_V1_STR)
 app.include_router(recommendations_router, prefix=settings.API_V1_STR)
 app.include_router(learning_plans_router, prefix=settings.API_V1_STR)
 app.include_router(documents_router, prefix=settings.API_V1_STR)
+app.include_router(ai_router, prefix=settings.API_V1_STR)
+app.include_router(copilot_router, prefix=settings.API_V1_STR)
 # Mount analytics endpoints (some have no prefix, registered directly inside router)
 app.include_router(analytics_router, prefix=settings.API_V1_STR)
+

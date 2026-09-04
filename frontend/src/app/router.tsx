@@ -16,6 +16,13 @@ import { DocumentManagerPage } from "../pages/DocumentManagerPage"
 import { DocumentUploadPage } from "../pages/DocumentUploadPage"
 import { QuestionGeneratorPage } from "../pages/QuestionGeneratorPage"
 import { AssessmentBuilderPage } from "../pages/AssessmentBuilderPage"
+import { OnboardingRolePage } from "../pages/OnboardingRolePage"
+import { DiagnosticAssessmentPage } from "../pages/DiagnosticAssessmentPage"
+import { InitialCompetencyStatusPage } from "../pages/InitialCompetencyStatusPage"
+import { SkillGapsPage } from "../pages/SkillGapsPage"
+import { RoleReadinessPage } from "../pages/RoleReadinessPage"
+import { ProgressPage } from "../pages/ProgressPage"
+import { DemoIGOTPlayerPage } from "../pages/DemoIGOTPlayerPage"
 
 // ==========================================
 // ROUTE GUARD (AUTHENTICATED ONLY)
@@ -54,8 +61,28 @@ export const router = createBrowserRouter([
         element: <DashboardPage />
       },
       {
+        path: "/onboarding/role",
+        element: <OnboardingRolePage />
+      },
+      {
+        path: "/diagnostic",
+        element: <DiagnosticAssessmentPage />
+      },
+      {
+        path: "/initial-status",
+        element: <InitialCompetencyStatusPage />
+      },
+      {
         path: "/competencies",
         element: <CompetencyPage />
+      },
+      {
+        path: "/skill-gaps",
+        element: <SkillGapsPage />
+      },
+      {
+        path: "/role-readiness",
+        element: <RoleReadinessPage />
       },
       {
         path: "/recommendations",
@@ -64,6 +91,14 @@ export const router = createBrowserRouter([
       {
         path: "/learning-plan",
         element: <LearningPlanPage />
+      },
+      {
+        path: "/progress",
+        element: <ProgressPage />
+      },
+      {
+        path: "/demo-igot/courses/:courseId",
+        element: <DemoIGOTPlayerPage />
       },
       {
         path: "/documents",

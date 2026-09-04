@@ -14,12 +14,13 @@ def test_database_seeding(db_session: Session):
     
     # 3. Verify RBAC Roles
     roles = db_session.query(RBACRole).all()
-    assert len(roles) == 4
+    assert len(roles) >= 4
     role_names = [r.name for r in roles]
     assert "ADMIN" in role_names
     assert "OFFICIAL" in role_names
     assert "SUPERVISOR" in role_names
     assert "MANAGER" in role_names
+    assert "TRAINER" in role_names
     
     # 4. Verify Competency Frameworks
     frameworks = db_session.query(CompetencyFramework).all()

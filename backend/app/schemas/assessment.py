@@ -84,7 +84,7 @@ class GeneratedMCQ(BaseModel):
     explanation: str
     competency_code: str
     difficulty: str
-    confidence: float
+    confidence: float = 0.9
     source_page: Optional[int] = None
     grounding_score: Optional[float] = None
     source_chunk_ids: List[uuid.UUID] = []

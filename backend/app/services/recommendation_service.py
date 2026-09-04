@@ -55,8 +55,10 @@ class RecommendationService:
         competencies = db.query(Competency).all()
         comp_id_map = {c.code: c.id for c in competencies}
         
-        # Only recommend for competencies with a positive gap
+        # Only recommend for competencies with a positive gap (or all role competencies for continuous upskilling)
         active_gaps = [g for g in gap_data.gaps if g.gap > 0.0]
+        if not active_gaps:
+            active_gaps = gap_data.gaps
         
         scored_candidates = []
         
@@ -66,7 +68,7 @@ class RecommendationService:
                 continue
                 
             # 2. Retrieve candidates addressing this specific competency gap
-            candidates = CandidateRetriever.retrieve_candidates([gap.competency_code])
+            candidates = CandidateRetriever.retrieve_candidates([gap.competency_code], db=db)
             
             # 3. Filter unsuitable candidates
             filtered = EligibilityFilter.filter_candidates(
@@ -103,6 +105,45 @@ class RecommendationService:
                     "gap_size": gap.gap,
                     "reason": reason
                 })
-                
+
+        # Fallback: if no candidates scored from active gaps, check all role competencies for continuous upskilling
+        if not scored_candidates and len(active_gaps) < len(gap_data.gaps):
+            remaining_gaps = [g for g in gap_data.gaps if g not in active_gaps]
+            for gap in remaining_gaps:
+                comp_id = comp_id_map.get(gap.competency_code)
+                if not comp_id:
+                    continue
+                candidates = CandidateRetriever.retrieve_candidates([gap.competency_code], db=db)
+                filtered = EligibilityFilter.filter_candidates(
+                    db,
+                    user_id=user_id,
+                    candidates=candidates,
+                    current_levels=current_levels,
+                    target_levels=target_levels
+                )
+                for c in filtered:
+                    scores = RecommendationScorer.score_candidate(
+                        candidate=c,
+                        gap_comp_code=gap.competency_code,
+                        gap_comp_name=gap.competency_name,
+                        required_level=gap.required_level,
+                        current_level=gap.current_level,
+                        weights=weights
+                    )
+                    reason = RankingService.generate_explanation(
+                        candidate=c,
+                        comp_name=gap.competency_name,
+                        current_level=gap.current_level,
+                        required_level=gap.required_level
+                    )
+                    scored_candidates.append({
+                        "candidate": c,
+                        "scores": scores,
+                        "competency_id": comp_id,
+                        "competency_code": gap.competency_code,
+                        "gap_size": gap.gap,
+                        "reason": reason
+                    })
+
         # 5. Rank and persist to Database (returns SQLAlchemy objects)
         return RankingService.rank_and_persist(db, user_id, scored_candidates)

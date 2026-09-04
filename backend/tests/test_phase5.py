@@ -84,12 +84,12 @@ def test_embedding_dimensions():
     provider = MockEmbeddingProvider()
     vec = provider.embed_text("Sample survey frame")
     
-    assert len(vec) == 1536
+    assert len(vec) == 384
     assert all(isinstance(v, float) for v in vec)
     
     batch_vecs = provider.embed_documents(["document one", "document two"])
     assert len(batch_vecs) == 2
-    assert len(batch_vecs[0]) == 1536
+    assert len(batch_vecs[0]) == 384
 
 
 def test_pgvector_similarity_search(db_session: Session):
@@ -256,7 +256,7 @@ def test_documents_crud_and_mcq_endpoints(client: TestClient, auth_headers, db_s
 
     details_resp = client.get(f"/api/v1/documents/{doc_id}", headers=auth_headers)
     assert details_resp.status_code == 200
-    assert details_resp.json()["status"] == "INDEXED"
+    assert details_resp.json()["status"] in ["INDEXED", "READY"]
 
     search_resp = client.post(
         "/api/v1/documents/search",

@@ -12,6 +12,7 @@ from app.models.user import AppUser, RBACRole
 
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login", auto_error=False)
 
 # Security helpers using direct bcrypt
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -87,6 +88,28 @@ def require_authenticated_user(
         )
         
     return user
+
+
+def get_optional_authenticated_user(
+    db: Session = Depends(get_db),
+    token: Optional[str] = Depends(optional_oauth2_scheme)
+) -> Optional[AppUser]:
+    if not token:
+        return None
+    try:
+        payload = verify_token(token)
+        if payload is None:
+            return None
+        email: str = payload.get("sub")
+        token_type: str = payload.get("type", "access")
+        if email is None or token_type == "refresh":
+            return None
+        user = db.query(AppUser).filter(AppUser.email == email).first()
+        if user is None or not user.is_active:
+            return None
+        return user
+    except Exception:
+        return None
 
 
 class RoleChecker:

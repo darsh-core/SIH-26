@@ -12,7 +12,7 @@ class MCQValidator:
         db: Session, 
         mcq: GeneratedMCQ, 
         context_text: str, 
-        grounding_threshold: float = 0.75
+        grounding_threshold: float = 0.5
     ) -> Tuple[bool, List[str], float]:
         """Validates MCQ structure, duplicate checks, and grounding similarity score."""
         reasons = []

@@ -10,12 +10,16 @@ import {
   Info, 
   BookOpen,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Play,
+  Sparkles,
+  Brain
 } from "lucide-react"
 
 import { useAuthStore } from "../store/authStore"
 import { recommendationApi } from "../services/recommendationApi"
 import { learningPlanApi } from "../services/learningPlanApi"
+import { learningApi } from "../services/learningApi"
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button, Alert, Progress } from "../components/ui/Primitives"
 import { formatDuration } from "../lib/utils"
 
@@ -72,6 +76,24 @@ export const RecommendationsPage = () => {
       navigate("/learning-plan");
     }
   });
+
+  const [launchingId, setLaunchingId] = useState<string | null>(null);
+
+  const handleLaunch = async (resourceId: string) => {
+    try {
+      setLaunchingId(resourceId);
+      const res = await learningApi.launchCourse(resourceId);
+      if (res.launch_url.startsWith("/")) {
+        navigate(res.launch_url);
+      } else {
+        window.open(res.launch_url, "_blank");
+      }
+    } catch (err) {
+      console.error("Failed to launch course:", err);
+    } finally {
+      setLaunchingId(null);
+    }
+  };
 
   const toggleExplanation = (resourceId: string) => {
     setExpandedExplanation(prev => ({
@@ -130,6 +152,38 @@ export const RecommendationsPage = () => {
             Add all to Learning Journey
           </Button>
         </div>
+      </div>
+
+      {/* Real-time AI Gap & Recommendation Assistant Banner */}
+      <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-blue-950 rounded-2xl p-5 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-indigo-500/30">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center shrink-0">
+            <Brain className="w-5 h-5 text-indigo-300" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <span>Real-Time AI Skill Gap & Recommendation Explainer</span>
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">Live Ollama 3.2</span>
+            </h3>
+            <p className="text-xs text-indigo-200 mt-0.5">
+              Ask real-time questions, analyze why specific courses were selected for your role, and receive personalized learning guidance.
+            </p>
+          </div>
+        </div>
+        <Button
+          onClick={() => {
+            const event = new CustomEvent("open-copilot", {
+              detail: {
+                query: "Analyze my current skill gaps, role readiness, and explain why you recommend each course for my cadre."
+              }
+            });
+            window.dispatchEvent(event);
+          }}
+          className="bg-white hover:bg-slate-100 text-indigo-950 font-bold text-xs py-2 px-4 rounded-lg shadow-sm flex items-center gap-2 shrink-0 cursor-pointer"
+        >
+          <Sparkles className="w-4 h-4 text-indigo-600" />
+          <span>Ask AI to Analyze My Gaps</span>
+        </Button>
       </div>
 
       {/* Filter Tabs Block */}
@@ -261,22 +315,65 @@ export const RecommendationsPage = () => {
                     {r.reason}
                   </p>
 
-                  {/* Explainability toggle & Score breakdown details block */}
-                  <div className="pt-2 border-t border-slate-100">
-                    <button
-                      onClick={() => toggleExplanation(r.resource_id)}
-                      className="flex items-center text-xs font-semibold text-gov-blue-500 hover:text-gov-blue-600 transition-colors"
+                  {/* Course Launch Action Row */}
+                  <div className="flex items-center justify-between gap-3 pt-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleLaunch(r.resource_id)}
+                      disabled={launchingId === r.resource_id}
+                      className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-medium flex items-center gap-2 shadow-sm text-xs"
                     >
-                      {isExpanded ? (
+                      {launchingId === r.resource_id ? (
                         <>
-                          Hide Score Breakdown <ChevronUp className="h-4 w-4 ml-1" />
+                          <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                          Launching Player...
                         </>
                       ) : (
                         <>
-                          Why this recommendation? <ChevronDown className="h-4 w-4 ml-1" />
+                          <Play className="w-3.5 h-3.5 fill-current" />
+                          Start Course on iGOT
                         </>
                       )}
-                    </button>
+                    </Button>
+
+                    <span className="text-[11px] text-slate-400 font-medium">
+                      {r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Training"}
+                    </span>
+                  </div>
+
+                  {/* Explainability toggle & Score breakdown details block */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <button
+                        onClick={() => toggleExplanation(r.resource_id)}
+                        className="flex items-center text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors"
+                      >
+                        {isExpanded ? (
+                          <>
+                            Hide Score Breakdown <ChevronUp className="h-4 w-4 ml-1" />
+                          </>
+                        ) : (
+                          <>
+                            Algorithm Score Breakdown <ChevronDown className="h-4 w-4 ml-1" />
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          const event = new CustomEvent("open-copilot", {
+                            detail: {
+                              query: `Why do you recommend '${r.title}' (${r.provider}) for my role, and what specific skill gaps does it bridge?`
+                            }
+                          });
+                          window.dispatchEvent(event);
+                        }}
+                        className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Ask AI Why This Was Suggested</span>
+                      </button>
+                    </div>
 
                     {isExpanded && r.debug_scores && (
                       <div className="mt-4 bg-slate-50/50 border border-slate-200 rounded-md p-5 space-y-4 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">

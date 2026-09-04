@@ -3,6 +3,25 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 
+class RoleSimpleResponse(BaseModel):
+    id: uuid.UUID
+    name: str
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class ProfileSimpleResponse(BaseModel):
+    id: uuid.UUID
+    first_name: str
+    last_name: str
+    designation: Optional[str] = None
+    department: Optional[str] = None
+    job_role_id: Optional[uuid.UUID] = None
+
+    class Config:
+        from_attributes = True
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6)
@@ -19,6 +38,8 @@ class UserResponse(BaseModel):
     is_active: bool
     is_superuser: bool
     organization_id: Optional[uuid.UUID] = None
+    roles: List[RoleSimpleResponse] = []
+    profile: Optional[ProfileSimpleResponse] = None
     created_at: datetime
 
     class Config:

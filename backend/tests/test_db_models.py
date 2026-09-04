@@ -128,11 +128,11 @@ def test_pgvector_embedding_insertion(db_session: Session):
     db_session.add(chunk)
     db_session.commit()
 
-    # 3. Create Vector Embedding (1536 dimensions)
-    mock_vector = [0.1] * 1536
+    # 3. Create Vector Embedding (384 dimensions - canonical)
+    mock_vector = [0.1] * 384
     embedding = DocumentEmbedding(
         chunk_id=chunk.id,
-        model_name="text-embedding-3-small",
+        model_name="all-MiniLM-L6-v2",
         embedding=mock_vector
     )
     db_session.add(embedding)
@@ -141,5 +141,5 @@ def test_pgvector_embedding_insertion(db_session: Session):
     # Query back and verify Vector
     queried_emb = db_session.query(DocumentEmbedding).filter_by(chunk_id=chunk.id).first()
     assert queried_emb is not None
-    assert len(queried_emb.embedding) == 1536
-    assert queried_emb.embedding[0] == 0.1
+    assert len(queried_emb.embedding) == 384
+    assert round(float(queried_emb.embedding[0]), 2) == 0.1

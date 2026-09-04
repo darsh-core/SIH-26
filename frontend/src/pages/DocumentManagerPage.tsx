@@ -26,7 +26,8 @@ export const DocumentManagerPage = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "INDEXED":
-        return <Badge variant="success">INDEXED</Badge>;
+      case "READY":
+        return <Badge variant="success">READY</Badge>;
       case "PROCESSING":
         return <Badge variant="warning">PROCESSING</Badge>;
       case "UPLOADED":
@@ -106,7 +107,7 @@ export const DocumentManagerPage = () => {
                           <Button 
                             variant="primary" 
                             size="sm"
-                            disabled={doc.status !== "INDEXED"}
+                            disabled={doc.status !== "INDEXED" && doc.status !== "READY"}
                             onClick={() => navigate(`/documents/${doc.id}/generate`)}
                             className="inline-flex items-center gap-1"
                           >

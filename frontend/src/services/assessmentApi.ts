@@ -32,5 +32,22 @@ export const assessmentApi = {
     return api.post<AssessmentResultResponse>(`/assessments/${assessmentId}/submit?attempt_id=${attemptId}`, {
       answers
     });
+  },
+
+  createRoleDiagnostic: async (jobRoleId: string, questionCount: number = 6): Promise<{
+    assessment_id: string;
+    title: string;
+    total_questions: number;
+    competency_breakdown: string[];
+  }> => {
+    return api.post("/assessments/role-diagnostic", {
+      job_role_id: jobRoleId,
+      question_count: questionCount
+    });
+  },
+
+  getAssessmentResults: async (assessmentId: string, attemptId?: string): Promise<AssessmentResultResponse> => {
+    const url = `/assessments/${assessmentId}/results${attemptId ? `?attempt_id=${attemptId}` : ''}`;
+    return api.get<AssessmentResultResponse>(url);
   }
 };

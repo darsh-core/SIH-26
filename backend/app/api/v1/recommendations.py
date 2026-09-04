@@ -172,6 +172,7 @@ def refresh_user_recommendations(
 
 # For legacy endpoint integration and compatibility
 @router.get("/recommendations", response_model=List[PersonalizedItemResponse], summary="List Legacy Recommendations for Current User")
+@router.get("/recommendations/my", response_model=List[PersonalizedItemResponse], summary="List Recommendations for Current User")
 def list_legacy_recommendations(
     db: Session = Depends(get_db),
     current_user: AppUser = Depends(require_authenticated_user)

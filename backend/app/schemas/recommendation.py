@@ -32,6 +32,7 @@ class CompetencyGapDetail(BaseModel):
     gap: float
     normalized_gap: float
     priority: str  # HIGH, MEDIUM, LOW, NONE
+    priority_score: float = 0.0
     mandatory: bool
     weight: float
 

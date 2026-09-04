@@ -12,7 +12,8 @@ from app.schemas.competency import CompetencyResponse, CompetencyLevelResponse
 from app.schemas.role import RoleResponse
 from app.schemas.course import CourseResponse
 from app.schemas.common import PaginatedResponse
-from app.schemas.recommendation import PersonalizedItemResponse
+from app.services.gap_engine import GapEngine
+from app.schemas.recommendation import PersonalizedItemResponse, CompetencyGapDetail
 
 router = APIRouter(tags=["Competencies"])
 
@@ -31,6 +32,15 @@ def list_competencies(
     )
     pages = (total + size - 1) // size
     return PaginatedResponse(items=items, total=total, page=page, size=size, pages=pages)
+
+
+@router.get("/competencies/gaps", response_model=List[CompetencyGapDetail], summary="Get Current User Competency Gaps")
+def get_my_competency_gaps(
+    db: Session = Depends(get_db),
+    current_user: AppUser = Depends(require_authenticated_user)
+):
+    gap_data = GapEngine.calculate_gaps(db, user_id=current_user.id)
+    return gap_data.gaps
 
 
 @router.get("/competencies/{id}", response_model=CompetencyResponse, summary="Get Competency Details")

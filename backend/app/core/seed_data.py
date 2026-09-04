@@ -221,7 +221,7 @@ def seed_database(db: Session):
         print("Organization 'MoSPI' already exists.")
 
     # 2. Seed RBAC Roles
-    roles = ["ADMIN", "OFFICIAL", "SUPERVISOR", "MANAGER"]
+    roles = ["ADMIN", "OFFICIAL", "SUPERVISOR", "MANAGER", "TRAINER", "EVALUATOR"]
     role_entities = {}
     for rname in roles:
         role = db.query(RBACRole).filter_by(name=rname).first()
@@ -305,7 +305,7 @@ def seed_database(db: Session):
             print(f"Job Role '{jr['name']}' already exists.")
 
     # 4.5 Seed Providers, Courses, and Training Programs (Candidate Catalogue)
-    from app.models.course import Provider, Course, CourseCompetency, TrainingProgram, TrainingCompetency
+    from app.models.course import Provider, Course, CourseCompetency, TrainingProgram, TrainingCompetency, CourseModule, CourseLesson
     from app.integrations.provider import MockIGOTProvider, MockNSSTAProvider
 
     # Add iGOT Provider
@@ -433,22 +433,20 @@ def seed_database(db: Session):
         if official_role:
             demo_user.roles.append(official_role)
             
-        # Create UserProfile
+        # Create UserProfile for Arun Kumar (Statistical Officer - Agricultural Statistics)
         demo_profile = UserProfile(
             user_id=demo_user.id,
-            first_name="Ramesh",
-            last_name="Chandra",
+            first_name="Arun",
+            last_name="Kumar",
             designation="Statistical Officer",
-            department="Field Survey Division",
+            department="Agricultural Statistics Division",
             contact_number="9876543210",
             gender="Male",
             date_of_joining=datetime.strptime("2024-01-15", "%Y-%m-%d").date(),
-            bio="Demo user EMP001 for statistical surveys.",
+            bio="Statistical Officer specializing in Agricultural Statistics and Sample Surveys.",
             job_role_id=stat_officer_role.id if stat_officer_role else None
         )
         db.add(demo_profile)
-        db.flush()
-        
         # Current competency levels
         current_levels = {
             "STAT_SURVEY_DESIGN": 3.7,
@@ -470,8 +468,43 @@ def seed_database(db: Session):
                     status="EVALUATED"
                 )
                 db.add(uc)
-        print("Seeded Demo User: Ramesh Chandra (employee@mospi.gov.in)")
+        print("Seeded Demo User: Arun Kumar (employee@mospi.gov.in)")
         db.flush()
+
+    # 5b. Seed Trainer User
+    # Credentials: trainer@mospi.gov.in / password123
+    trainer_email = "trainer@mospi.gov.in"
+    trainer_user = db.query(AppUser).filter_by(email=trainer_email).first()
+    if not trainer_user:
+        mospi_org = db.query(Organization).filter_by(code="MoSPI").first()
+        trainer_user = AppUser(
+            email=trainer_email,
+            hashed_password=get_password_hash("password123"),
+            is_active=True,
+            is_superuser=False,
+            organization_id=mospi_org.id if mospi_org else None
+        )
+        db.add(trainer_user)
+        db.flush()
+        
+        trainer_role = db.query(RBACRole).filter_by(name="TRAINER").first()
+        if trainer_role:
+            trainer_user.roles.append(trainer_role)
+            
+        trainer_profile = UserProfile(
+            user_id=trainer_user.id,
+            first_name="Dr. Sunita",
+            last_name="Sharma",
+            designation="Senior Training Director",
+            department="National Statistical Systems Training Academy (NSSTA)",
+            contact_number="9876543211",
+            gender="Female",
+            date_of_joining=datetime.strptime("2020-05-10", "%Y-%m-%d").date(),
+            bio="Senior Faculty & Assessment Reviewer at NSSTA Greater Noida."
+        )
+        db.add(trainer_profile)
+        db.flush()
+        print("Seeded Trainer User: Dr. Sunita Sharma (trainer@mospi.gov.in)")
 
     # 6. Seed an Assessment
     from app.models.assessment import Assessment, Question, QuestionOption, QuestionCompetency
@@ -536,8 +569,300 @@ def seed_database(db: Session):
         print("Seeded Demo Assessment: Sampling Methodology Core Assessment")
         db.flush()
 
+    # 7. Seed Course Modules & Lessons for Demo iGOT Player
+    seed_course_modules_and_lessons(db)
+
     db.commit()
     print("Database seeding completed successfully!")
+
+
+def seed_course_modules_and_lessons(db):
+    from app.models.course import Course, CourseModule, CourseLesson
+
+    TAILORED_MODULES = {
+        "IGOT_COMP_STATS_01": [
+            {
+                "code": "MOD_01",
+                "title": "Principles of Official Survey Design",
+                "description": "Understanding survey objectives, target population, and sample frame development for official surveys.",
+                "duration": 45,
+                "lessons": [
+                    {
+                        "title": "Defining Survey Scope & Objectives",
+                        "content": "Official government surveys require rigorous alignment with policy objectives. Under MoSPI frameworks, survey objectives must establish clear operational definitions, target populations, and primary inquiry domains before questionnaire formulation. Field teams must distinguish between target populations and study populations to avoid undercoverage bias.",
+                        "duration": 20
+                    },
+                    {
+                        "title": "Sampling Frame Construction & Validation",
+                        "content": "A robust sampling frame is the cornerstone of survey validity. In India, urban sampling frames typically leverage the Urban Frame Survey (UFS) blocks maintained by the Field Operations Division (FOD), while rural frames utilize the latest Census Village directories. Frames must undergo periodic auxiliary auditing to identify boundary changes, de-notified settlements, or newly urbanized agglomerations.",
+                        "duration": 25
+                    }
+                ]
+            },
+            {
+                "code": "MOD_02",
+                "title": "Questionnaire Design & Field Pre-testing",
+                "description": "Structuring schedules, skip-patterns, field validation rules, and conducting pilot tests.",
+                "duration": 60,
+                "lessons": [
+                    {
+                        "title": "Structured Schedules & Response Standardization",
+                        "content": "Questionnaire schedules in MoSPI surveys require standardized code lists (e.g. NIC-2008 for economic activities, NCO-2015 for occupations). Standardized terminology prevents enumerator misclassification and facilitates inter-temporal comparability across survey rounds.",
+                        "duration": 30
+                    },
+                    {
+                        "title": "Pilot Testing & Cognitive Interviewing",
+                        "content": "Pilot testing ensures respondents interpret questions as intended. Cognitive interviews test respondent comprehension, recall strategy, judgment, and response editing, isolating ambiguous phrases before nationwide deployment.",
+                        "duration": 30
+                    }
+                ]
+            },
+            {
+                "code": "MOD_03",
+                "title": "Fieldwork Execution & Non-sampling Error Control",
+                "description": "Field supervision, verification protocols, call-back procedures, and managing non-response.",
+                "duration": 75,
+                "lessons": [
+                    {
+                        "title": "Supervisory Inspection & Concurrent Verification",
+                        "content": "High-quality survey execution depends on multi-tier supervision. Senior Statistical Officers conduct concurrent inspections of interviews and independent re-interviews on a stratified subsample of households to measure and minimize enumerator variance.",
+                        "duration": 35
+                    },
+                    {
+                        "title": "Non-Response Imputation & Treatment",
+                        "content": "When households are unavailable or refuse cooperation, strict call-back schedules (minimum 3 attempts) are mandatory. Residual non-response is handled using weighting adjustments (cell-mean or hot-deck imputation) to preserve population estimate integrity.",
+                        "duration": 40
+                    }
+                ]
+            }
+        ],
+        "IGOT_COMP_STATS_03": [
+            {
+                "code": "MOD_01",
+                "title": "Probability Sampling Fundamentals",
+                "description": "Simple random sampling, systematic selection, and probability proportional to size (PPS).",
+                "duration": 50,
+                "lessons": [
+                    {
+                        "title": "Basic Sampling Principles in Official Statistics",
+                        "content": "In official inquiries, every sampling unit must have a known, non-zero probability of selection. Simple Random Sampling Without Replacement (SRSWOR) provides the benchmark design with unbiased estimator properties: E(y_bar) = Y_bar.",
+                        "duration": 25
+                    },
+                    {
+                        "title": "Probability Proportional to Size (PPS) Selection",
+                        "content": "When Primary Sampling Units (PSUs) such as villages or UFS blocks vary greatly in population, PPS sampling (e.g. Hansen-Hurwitz or Horvitz-Thompson estimation) improves estimation efficiency by granting larger clusters proportional inclusion probability.",
+                        "duration": 25
+                    }
+                ]
+            },
+            {
+                "code": "MOD_02",
+                "title": "Stratified Multi-Stage Sampling in NSSO Surveys",
+                "description": "Stratification strategies, multi-stage cluster sampling, and ultimate stage unit (USU) selection.",
+                "duration": 70,
+                "lessons": [
+                    {
+                        "title": "Stratification Criteria & Variance Reduction",
+                        "content": "Stratification groups heterogeneous populations into homogeneous strata (e.g. dividing districts into rural agricultural zones vs non-agricultural belts). Variance within strata is minimized, substantially lowering total survey error.",
+                        "duration": 35
+                    },
+                    {
+                        "title": "Multi-Stage Sampling & Sub-sampling in the Field",
+                        "content": "In nationwide NSS surveys, multi-stage design is standard: 1st Stage Units (FSUs) are villages/blocks, and 2nd Stage Units (SSUs) are households. This balance minimizes travel overhead while achieving national representativeness.",
+                        "duration": 35
+                    }
+                ]
+            },
+            {
+                "code": "MOD_03",
+                "title": "Estimation Procedures & Multiplier Generation",
+                "description": "Deriving sampling weights, design multipliers, and calculating margins of error.",
+                "duration": 60,
+                "lessons": [
+                    {
+                        "title": "Inverse Probability Weighting (Multipliers)",
+                        "content": "Survey estimates aggregate sample observations via multipliers equal to the inverse inclusion probability: w_i = 1 / pi_i. Multipliers are further calibrated using post-stratification benchmarked against national demographic projections.",
+                        "duration": 30
+                    },
+                    {
+                        "title": "Standard Error & Confidence Intervals",
+                        "content": "Official statistics reports must publish Relative Standard Error (RSE) alongside point estimates. Estimates with RSE > 20% are flagged with cautionary reliability caveats.",
+                        "duration": 30
+                    }
+                ]
+            }
+        ],
+        "IGOT_COMP_STATS_05": [
+            {
+                "code": "MOD_01",
+                "title": "National Quality Assurance Framework (NQAF)",
+                "description": "UN-NQAF and MoSPI statistical audit guidelines.",
+                "duration": 60,
+                "lessons": [
+                    {
+                        "title": "The Six Dimensions of Statistical Quality",
+                        "content": "Official statistical outputs must adhere to: Relevance, Accuracy, Timeliness, Accessibility, Comparability, and Coherence. Balancing timeliness with accuracy is a core operational challenge in release schedules.",
+                        "duration": 30
+                    },
+                    {
+                        "title": "Auditing Institutional Quality Commitments",
+                        "content": "Data producers must maintain transparency in methodology, publish revision policies, and implement statistical disclosure controls before microdata release.",
+                        "duration": 30
+                    }
+                ]
+            },
+            {
+                "code": "MOD_02",
+                "title": "Data Validation, Consistency Rules & Audits",
+                "description": "Computer-assisted personal interviewing (CAPI) validation and post-enumeration audits.",
+                "duration": 60,
+                "lessons": [
+                    {
+                        "title": "Automated Validation Rules in CAPI Systems",
+                        "content": "Modern CAPI tablets enforce hard and soft consistency checks at the point of entry (e.g., respondent age vs child age, reported acreage vs crop yield limits), preventing logical contradictions before data leaves the field.",
+                        "duration": 30
+                    },
+                    {
+                        "title": "Outlier Detection and Statistical Imputation",
+                        "content": "Statistical outlier screening utilizes Mahalanobis distance, Tukey's fences, and IQR distributions to flag spurious survey entries requiring supervisory re-verification.",
+                        "duration": 30
+                    }
+                ]
+            }
+        ],
+        "IGOT_COMP_TECH_01": [
+            {
+                "code": "MOD_01",
+                "title": "Python & Pandas for Official Statistical Microdata",
+                "description": "Loading, cleaning, and preparing large-scale survey datasets.",
+                "duration": 60,
+                "lessons": [
+                    {
+                        "title": "Importing Fixed-Width & CSV Survey Files",
+                        "content": "NSS microdata is distributed in fixed-width or structured CSV formats. Using pandas.read_fwf() and read_csv() with optimized categorical dtypes enables fast parsing of millions of records.",
+                        "duration": 30
+                    },
+                    {
+                        "title": "Handling Missing Data & Coding Systems",
+                        "content": "Converting MoSPI convention codes (e.g. 99 for not reported, -1 for missing) into proper NaN values and creating verified analytical subsets.",
+                        "duration": 30
+                    }
+                ]
+            },
+            {
+                "code": "MOD_02",
+                "title": "Survey Weighting & Aggregate Estimations in Python",
+                "description": "Applying multipliers to generate national totals and sub-group tables.",
+                "duration": 60,
+                "lessons": [
+                    {
+                        "title": "Weighted Means and Total Estimation",
+                        "content": "Calculating unweighted vs weighted statistics using numpy.average(data['income'], weights=data['multiplier']) to compute official population estimates.",
+                        "duration": 30
+                    },
+                    {
+                        "title": "Cross-tabulation & Disaggregation",
+                        "content": "Generating disaggregated state-level and sector-level statistical tables with confidence intervals using groupby and aggregation pipelines.",
+                        "duration": 30
+                    }
+                ]
+            }
+        ]
+    }
+
+    courses = db.query(Course).all()
+    for course in courses:
+        existing_mods = db.query(CourseModule).filter_by(course_id=course.id).count()
+        if existing_mods > 0:
+            continue
+
+        mods_data = TAILORED_MODULES.get(course.code)
+        if not mods_data:
+            # Generate 3 realistic default modules
+            mods_data = [
+                {
+                    "code": "MOD_01",
+                    "title": f"Foundations of {course.title}",
+                    "description": f"Core statutory context, standards, and conceptual foundations for {course.title}.",
+                    "duration": 45,
+                    "lessons": [
+                        {
+                            "title": "Introduction & National Framework",
+                            "content": f"This module introduces the key principles and official guidelines governing {course.title} within India's statistical system.",
+                            "duration": 20
+                        },
+                        {
+                            "title": "Operational Guidelines & Standards",
+                            "content": f"Deep dive into standard operating procedures, documentation rules, and compliance requirements for {course.title}.",
+                            "duration": 25
+                        }
+                    ]
+                },
+                {
+                    "code": "MOD_02",
+                    "title": "Implementation Procedures & Methodologies",
+                    "description": f"Practical execution techniques and field workflows for {course.title}.",
+                    "duration": 60,
+                    "lessons": [
+                        {
+                            "title": "Field Workflows & Data Collection",
+                            "content": "Detailed step-by-step methodologies for data compilation, consistency checks, and error prevention.",
+                            "duration": 30
+                        },
+                        {
+                            "title": "Data Processing & Tabulation",
+                            "content": "Aggregating, verifying, and generating official statistics tables according to ministerial release standards.",
+                            "duration": 30
+                        }
+                    ]
+                },
+                {
+                    "code": "MOD_03",
+                    "title": "Quality Audits & Statistical Reporting",
+                    "description": f"Auditing quality, error handling, and disseminating outputs for {course.title}.",
+                    "duration": 45,
+                    "lessons": [
+                        {
+                            "title": "Quality Metrics & Validation Checks",
+                            "content": "Applying statistical checks, calculating standard errors, and preparing data validation audit reports.",
+                            "duration": 20
+                        },
+                        {
+                            "title": "Final Review & Publication Standards",
+                            "content": "Compliance with national publication standards, metadata documentation, and data dissemination protocols.",
+                            "duration": 25
+                        }
+                    ]
+                }
+            ]
+
+        for m_idx, m_info in enumerate(mods_data, start=1):
+            mod = CourseModule(
+                course_id=course.id,
+                code=m_info["code"],
+                title=m_info["title"],
+                description=m_info["description"],
+                sequence_order=m_idx,
+                duration_minutes=m_info.get("duration", 45),
+                is_required=True,
+                metadata_json={}
+            )
+            db.add(mod)
+            db.flush()
+
+            for l_idx, l_info in enumerate(m_info.get("lessons", []), start=1):
+                lesson = CourseLesson(
+                    module_id=mod.id,
+                    title=l_info["title"],
+                    content=l_info["content"],
+                    duration_minutes=l_info.get("duration", 20),
+                    sequence_order=l_idx,
+                    metadata_json={}
+                )
+                db.add(lesson)
+
+        db.flush()
+        print(f"  Seeded modules & lessons for: {course.title}")
 
 if __name__ == "__main__":
     db = SessionLocal()

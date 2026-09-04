@@ -48,7 +48,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 
   if (!response.ok) {
-    const errorMsg = data?.detail || data?.message || `Request failed with status ${response.status}`;
+    const errorMsg = data?.error?.message || data?.detail || data?.message || `Request failed with status ${response.status}`;
     throw new ApiError(errorMsg, response.status, data);
   }
 
@@ -71,6 +71,20 @@ export const api = {
       ...options,
       method: "POST",
       body: formData
+    }),
+    
+  put: <T>(path: string, body?: any, options?: RequestInit) => 
+    request<T>(path, {
+      ...options,
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined
+    }),
+
+  patch: <T>(path: string, body?: any, options?: RequestInit) => 
+    request<T>(path, {
+      ...options,
+      method: "PATCH",
+      body: body ? JSON.stringify(body) : undefined
     }),
     
   delete: <T>(path: string, options?: RequestInit) => 

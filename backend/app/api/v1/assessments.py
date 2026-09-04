@@ -1,5 +1,6 @@
 import uuid
 from typing import List, Optional
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
@@ -171,3 +172,26 @@ def get_assessment_results(
         is_passed=attempt.is_passed,
         competency_performances=performances
     )
+
+
+class RoleDiagnosticRequest(BaseModel):
+    job_role_id: uuid.UUID
+    question_count: int = 10
+
+@router.post("/role-diagnostic", summary="Generate AI Role Diagnostic Assessment")
+def generate_role_diagnostic(
+    request: RoleDiagnosticRequest,
+    db: Session = Depends(get_db),
+    current_user: AppUser = Depends(require_authenticated_user)
+):
+    """Generates an AI-assisted diagnostic checkpoint for a Job Role and its required competencies."""
+    from app.ai.role_assessment_generator import RoleDiagnosticGenerator
+    try:
+        res = RoleDiagnosticGenerator.generate_role_assessment(
+            db=db,
+            job_role_id=request.job_role_id,
+            total_questions=request.question_count
+        )
+        return res
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

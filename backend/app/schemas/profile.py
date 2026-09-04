@@ -12,6 +12,7 @@ class ProfileCreate(BaseModel):
     gender: Optional[str] = None
     date_of_joining: Optional[date] = None
     bio: Optional[str] = None
+    job_role_id: Optional[uuid.UUID] = None
 
 class ProfileUpdate(BaseModel):
     first_name: Optional[str] = None
@@ -22,6 +23,7 @@ class ProfileUpdate(BaseModel):
     gender: Optional[str] = None
     date_of_joining: Optional[date] = None
     bio: Optional[str] = None
+    job_role_id: Optional[uuid.UUID] = None
 
 class ProfileResponse(BaseModel):
     id: uuid.UUID
@@ -34,6 +36,7 @@ class ProfileResponse(BaseModel):
     gender: Optional[str] = None
     date_of_joining: Optional[date] = None
     bio: Optional[str] = None
+    job_role_id: Optional[uuid.UUID] = None
     created_at: datetime
     updated_at: datetime
 

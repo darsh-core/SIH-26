@@ -183,15 +183,26 @@ export const LearningPlanPage = () => {
                             <Trash2 className="h-4 w-4" />
                           </button>
                           
-                          <a
-                            href={item.item_type === "COURSE" ? item.course?.url : `https://nssta.gov.in/programs/${item.training_program?.code}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Button variant="outline" size="sm">
-                              Open Resource <ExternalLink className="h-3 w-3 ml-1" />
+                          {item.item_type === "COURSE" ? (
+                            <Button
+                              size="sm"
+                              onClick={() => navigate(`/demo-igot/courses/${item.course_id}`)}
+                              className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-medium flex items-center gap-1.5 text-xs h-8 px-3"
+                            >
+                              <Play className="h-3 w-3 fill-current" />
+                              Open in iGOT Player
                             </Button>
-                          </a>
+                          ) : (
+                            <a
+                              href={`https://nssta.gov.in/programs/${item.training_program?.code}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Button variant="outline" size="sm" className="text-xs h-8 px-3">
+                                Open Resource <ExternalLink className="h-3 w-3 ml-1" />
+                              </Button>
+                            </a>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
