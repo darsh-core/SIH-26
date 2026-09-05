@@ -179,53 +179,53 @@ export const DashboardPage = () => {
 
         {/* 4 Staff Command Center KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-gov-blue-100 bg-white">
+          <Card className="border-gov-blue-100 bg-white hover:shadow-md transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-5 flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Trainees</span>
                 <span className="text-2xl font-extrabold text-slate-900 mt-1 block">48 Officers</span>
                 <span className="text-[10px] text-emerald-600 font-semibold">● 14 Under Diagnostic Evaluation</span>
               </div>
-              <div className="p-3 bg-gov-blue-50 text-gov-blue-500 rounded-xl">
+              <div className="p-3 bg-gov-blue-50 text-gov-blue-500 rounded-xl shadow-inner">
                 <Users className="h-6 w-6" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-indigo-100 bg-white">
+          <Card className="border-indigo-100 bg-white hover:shadow-md transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-5 flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Avg Role Readiness</span>
                 <span className="text-2xl font-extrabold text-gov-blue-500 mt-1 block">74.2%</span>
                 <span className="text-[10px] text-emerald-600 font-semibold">▲ +4.8% post-training</span>
               </div>
-              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl shadow-inner">
                 <TrendingUp className="h-6 w-6" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-purple-100 bg-white">
+          <Card className="border-purple-100 bg-white hover:shadow-md transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-5 flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Vectorized Manuals</span>
                 <span className="text-2xl font-extrabold text-purple-600 mt-1 block">{docsData?.total || 3} Files</span>
                 <span className="text-[10px] text-purple-700 font-semibold">{totalChunks} Chunks (384-D)</span>
               </div>
-              <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+              <div className="p-3 bg-purple-50 text-purple-600 rounded-xl shadow-inner">
                 <Database className="h-6 w-6" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-amber-100 bg-white">
+          <Card className="border-amber-100 bg-white hover:shadow-md transition-all duration-300 hover:-translate-y-1">
             <CardContent className="p-5 flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Pending Review</span>
                 <span className="text-2xl font-extrabold text-amber-600 mt-1 block">5 Items</span>
                 <span className="text-[10px] text-amber-700 font-semibold">Human-in-the-Loop Quality Gate</span>
               </div>
-              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl shadow-inner">
                 <BrainCircuit className="h-6 w-6" />
               </div>
             </CardContent>

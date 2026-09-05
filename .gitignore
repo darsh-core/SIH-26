@@ -54,3 +54,6 @@ frontend/.turbo/
 # Local uploads / scratch
 mock-data/uploads/
 backend/uploads/
+backend/chroma_db/
+backend/test_chroma/
+*.db

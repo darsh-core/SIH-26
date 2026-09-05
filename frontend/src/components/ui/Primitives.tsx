@@ -16,13 +16,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center font-medium rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]",
+          "inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]",
           // Variants
-          variant === "primary" && "bg-gov-blue-500 hover:bg-gov-blue-600 text-white focus:ring-gov-blue-500 shadow-sm",
-          variant === "secondary" && "bg-slate-200 hover:bg-slate-300 text-slate-800 focus:ring-slate-400",
-          variant === "outline" && "border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 focus:ring-gov-blue-500",
+          variant === "primary" && "bg-gov-blue-600 hover:bg-gov-blue-700 text-white focus:ring-gov-blue-500 shadow-sm hover:shadow-md",
+          variant === "secondary" && "bg-slate-100 hover:bg-slate-200 text-slate-800 focus:ring-slate-400 border border-slate-200",
+          variant === "outline" && "border border-slate-300 bg-white hover:bg-slate-50 hover:border-gov-blue-300 hover:text-gov-blue-700 text-slate-700 focus:ring-gov-blue-500 shadow-sm",
           variant === "ghost" && "hover:bg-slate-100 text-slate-600",
-          variant === "destructive" && "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 shadow-sm",
+          variant === "destructive" && "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 shadow-sm hover:shadow-md",
           // Sizes
           size === "sm" && "px-3 py-1.5 text-xs",
           size === "md" && "px-4 py-2 text-sm",
@@ -49,7 +49,7 @@ Button.displayName = "Button"
 // CARD COMPONENT
 // ==========================================
 export const Card = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden", className)} {...props} />
+  <div className={cn("bg-white border border-slate-200/80 rounded-xl shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] overflow-hidden", className)} {...props} />
 )
 
 export const CardHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (

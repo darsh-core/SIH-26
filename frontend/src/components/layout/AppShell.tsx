@@ -81,7 +81,22 @@ export const AppShell = ({ children }: AppShellProps) => {
       ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Official Govt Strip */}
+      <div className="bg-[#1a1a1a] text-slate-300 py-1.5 px-4 text-[10px] md:text-[11px] font-medium flex justify-between items-center z-40 relative">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5">
+            <span className="text-white font-bold">भारत सरकार</span>
+            <span className="opacity-50">|</span>
+            <span>GOVERNMENT OF INDIA</span>
+          </span>
+        </div>
+        <div className="hidden md:flex items-center gap-4">
+          <span>Ministry of Statistics and Programme Implementation (MoSPI)</span>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex flex-col md:flex-row relative">
       {/* 1. Header for mobile */}
       <header className="bg-gov-blue-500 text-white px-4 py-3 flex items-center justify-between md:hidden border-b border-gov-blue-600 shadow-sm z-30">
         <div className="flex items-center gap-2">
@@ -239,6 +254,7 @@ export const AppShell = ({ children }: AppShellProps) => {
 
       {/* Global MoSPI AI Copilot Widget */}
       <CopilotDrawer />
+      </div>
     </div>
   )
 }
