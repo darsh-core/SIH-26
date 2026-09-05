@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { 
   Sparkles, 
   X, 
@@ -17,7 +19,11 @@ import {
   ExternalLink,
   Info,
   Brain,
-  Target
+  Target,
+  Copy,
+  Check,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
 import { copilotApi, ChatMessage, CopilotCitation, QuickPrompt } from "../../services/copilotApi";
 import { useAuthStore } from "../../store/authStore";
@@ -37,6 +43,8 @@ export const CopilotDrawer: React.FC = () => {
   }>>([]);
   const [quickPrompts, setQuickPrompts] = useState<QuickPrompt[]>([]);
   const [expandedCitationIdx, setExpandedCitationIdx] = useState<string | null>(null);
+  const [isWide, setIsWide] = useState(false);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -124,6 +132,12 @@ export const CopilotDrawer: React.FC = () => {
     setExpandedCitationIdx(null);
   };
 
+  const handleCopy = (text: string, idx: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
+
   const renderIcon = (iconName?: string) => {
     switch (iconName) {
       case "Brain": return <Brain className="w-3.5 h-3.5 text-indigo-500" />;
@@ -170,7 +184,10 @@ export const CopilotDrawer: React.FC = () => {
 
       {/* 2. Slide-Over Copilot Window */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[95vw] sm:w-[430px] h-[640px] max-h-[90vh] z-50 flex flex-col rounded-2xl bg-white shadow-2xl border border-slate-200/90 overflow-hidden backdrop-blur-xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
+        <div className={cn(
+          "fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-[640px] max-h-[90vh] z-50 flex flex-col rounded-2xl bg-white shadow-2xl border border-slate-200/90 overflow-hidden backdrop-blur-xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-4",
+          isWide ? "w-[95vw] sm:w-[680px] md:w-[740px]" : "w-[95vw] sm:w-[440px]"
+        )}>
           
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white px-4 py-3.5 flex items-center justify-between border-b border-indigo-900/50 shrink-0">
@@ -198,16 +215,24 @@ export const CopilotDrawer: React.FC = () => {
 
             <div className="flex items-center gap-1">
               <button
+                onClick={() => setIsWide(!isWide)}
+                title={isWide ? "Collapse view (440px)" : "Expand view for tables (740px)"}
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors hidden sm:inline-flex cursor-pointer"
+                aria-label="Toggle wide view"
+              >
+                {isWide ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              </button>
+              <button
                 onClick={handleClear}
                 title="Reset conversation"
-                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors"
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer"
                 aria-label="Clear chat"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors"
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer"
                 aria-label="Close copilot"
               >
                 <X className="w-5 h-5" />
@@ -279,20 +304,131 @@ export const CopilotDrawer: React.FC = () => {
                 key={idx}
                 className={cn(
                   "flex flex-col space-y-1.5",
-                  msg.role === "user" ? "items-end" : "items-start"
+                  msg.role === "user" ? "items-end" : "items-start w-full"
                 )}
               >
                 <div
                   className={cn(
-                    "max-w-[88%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed shadow-xs",
+                    "rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed shadow-xs transition-all",
                     msg.role === "user"
-                      ? "bg-gradient-to-r from-gov-blue-500 to-indigo-600 text-white rounded-br-xs"
-                      : "bg-white text-slate-800 border border-slate-200/90 rounded-bl-xs shadow-xs"
+                      ? "max-w-[85%] bg-gradient-to-r from-gov-blue-500 to-indigo-600 text-white rounded-br-xs font-medium"
+                      : "w-full max-w-[98%] bg-white text-slate-800 border border-slate-200/90 rounded-bl-xs shadow-xs"
                   )}
                 >
-                  <div className="whitespace-pre-wrap">
-                    {msg.content}
-                  </div>
+                  {msg.role === "user" ? (
+                    <div className="whitespace-pre-wrap">
+                      {msg.content}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 text-[10px]">
+                        <span className="font-semibold text-indigo-950 flex items-center gap-1.5">
+                          <Bot className="w-3.5 h-3.5 text-indigo-600" />
+                          MoSPI Advisory
+                        </span>
+                        <button
+                          onClick={() => handleCopy(msg.content, idx)}
+                          className="flex items-center gap-1 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 px-1.5 py-0.5 rounded transition-colors cursor-pointer"
+                          title="Copy response"
+                        >
+                          {copiedIdx === idx ? (
+                            <>
+                              <Check className="w-3 h-3 text-emerald-600" />
+                              <span className="text-[9px] text-emerald-600 font-medium">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span className="text-[9px]">Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="text-slate-800 text-xs">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            table: ({ node, ...props }) => (
+                              <div className="my-2.5 overflow-x-auto rounded-xl border border-slate-200/90 bg-white shadow-2xs">
+                                <table className="w-full text-left border-collapse text-[11px]" {...props} />
+                              </div>
+                            ),
+                            thead: ({ node, ...props }) => (
+                              <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200" {...props} />
+                            ),
+                            th: ({ node, ...props }) => (
+                              <th className="px-3 py-2 text-[10.5px] font-bold text-slate-800 bg-slate-100/80 border-b border-slate-200 text-left whitespace-nowrap" {...props} />
+                            ),
+                            tbody: ({ node, ...props }) => (
+                              <tbody className="divide-y divide-slate-100 bg-white" {...props} />
+                            ),
+                            tr: ({ node, ...props }) => (
+                              <tr className="hover:bg-indigo-50/30 transition-colors" {...props} />
+                            ),
+                            td: ({ node, ...props }) => (
+                              <td className="px-3 py-2 text-[11px] text-slate-700 align-middle leading-snug border-b border-slate-100 last:border-b-0" {...props} />
+                            ),
+                            h1: ({ node, ...props }) => (
+                              <h1 className="text-sm font-bold text-slate-900 mt-3 mb-1.5 flex items-center gap-1.5" {...props} />
+                            ),
+                            h2: ({ node, ...props }) => (
+                              <h2 className="text-xs font-bold text-indigo-950 mt-3 mb-1.5 pb-1 border-b border-indigo-100 flex items-center gap-1.5 tracking-tight" {...props} />
+                            ),
+                            h3: ({ node, ...props }) => (
+                              <h3 className="text-[11.5px] font-bold text-slate-800 mt-2.5 mb-1 flex items-center gap-1 text-indigo-900" {...props} />
+                            ),
+                            h4: ({ node, ...props }) => (
+                              <h4 className="text-[11px] font-semibold text-slate-700 mt-2 mb-0.5" {...props} />
+                            ),
+                            p: ({ node, ...props }) => (
+                              <p className="mb-2 last:mb-0 leading-relaxed text-xs text-slate-700" {...props} />
+                            ),
+                            ul: ({ node, ...props }) => (
+                              <ul className="list-disc list-outside ml-4 space-y-1 my-2 text-xs text-slate-700" {...props} />
+                            ),
+                            ol: ({ node, ...props }) => (
+                              <ol className="list-decimal list-outside ml-4 space-y-1 my-2 text-xs text-slate-700" {...props} />
+                            ),
+                            li: ({ node, ...props }) => (
+                              <li className="leading-relaxed pl-0.5" {...props} />
+                            ),
+                            strong: ({ node, ...props }) => (
+                              <strong className="font-semibold text-slate-900" {...props} />
+                            ),
+                            em: ({ node, ...props }) => (
+                              <em className="italic text-slate-800" {...props} />
+                            ),
+                            blockquote: ({ node, ...props }) => (
+                              <blockquote className="border-l-2 border-indigo-500 bg-indigo-50/60 pl-3 pr-2 py-1.5 my-2 text-xs italic text-indigo-950 rounded-r-md" {...props} />
+                            ),
+                            code: ({ node, inline, className, children, ...props }: any) => {
+                              if (inline) {
+                                return (
+                                  <code className="px-1.5 py-0.5 rounded bg-slate-100 font-mono text-[10.5px] text-indigo-700 border border-slate-200/80 font-medium" {...props}>
+                                    {children}
+                                  </code>
+                                );
+                              }
+                              return (
+                                <pre className="my-2 p-3 rounded-lg bg-slate-900 text-slate-100 font-mono text-[10.5px] overflow-x-auto border border-slate-800 leading-normal">
+                                  <code {...props}>{children}</code>
+                                </pre>
+                              );
+                            },
+                            hr: ({ node, ...props }) => (
+                              <hr className="my-2.5 border-slate-200" {...props} />
+                            ),
+                            a: ({ node, ...props }) => (
+                              <a className="text-indigo-600 hover:text-indigo-800 underline font-medium" target="_blank" rel="noopener noreferrer" {...props} />
+                            )
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Citations block for Assistant */}
                   {msg.role === "assistant" && msg.citations && msg.citations.length > 0 && (
