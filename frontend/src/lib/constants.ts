@@ -1,5 +1,5 @@
 export const API_BASE_URL = 
-  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) || "http://127.0.0.1:8000/api/v1";
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) || "/api/v1";
 
 export const DEMO_MODE = 
   (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_DEMO_MODE === "true") || true; // default to true in dev for convenience
