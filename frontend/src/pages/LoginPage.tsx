@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { Award, Lock, Mail, ShieldAlert } from "lucide-react"
+import { ShieldCheck, Lock, Mail, ShieldAlert } from "lucide-react"
 
 import { authApi } from "../services/authApi"
 import { useAuthStore } from "../store/authStore"
@@ -76,131 +76,146 @@ export const LoginPage = () => {
   };
 
   return (
-    <div 
-      className="relative min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden animate-gradient-shift"
-      style={{
-        backgroundImage: "linear-gradient(-45deg, #eef2ff, #e0f2fe, #fef3c7, #e0e7ff, #ecfdf5, #f0f9ff)",
-        backgroundSize: "300% 300%"
-      }}
-    >
-      {/* Dynamic drifting ambient glowing liquid orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-24 left-1/4 w-[600px] h-[450px] bg-blue-300/35 rounded-full blur-3xl animate-float-1" />
-        <div className="absolute top-1/3 -right-20 w-[450px] h-[450px] bg-amber-200/40 rounded-full blur-3xl animate-float-2" />
-        <div className="absolute -bottom-24 left-1/3 w-[550px] h-[400px] bg-teal-200/35 rounded-full blur-3xl animate-float-3" />
-        <div className="absolute top-2/3 -left-20 w-[400px] h-[400px] bg-purple-200/30 rounded-full blur-3xl animate-float-1" />
-        
-        {/* Subtle geometric dot grid texture */}
+    <div className="relative min-h-screen flex flex-col bg-slate-900 overflow-hidden">
+      
+      {/* Official Govt Strip */}
+      <div className="bg-black/80 text-slate-300 py-1.5 px-6 text-[11px] font-medium flex justify-between items-center z-40 border-b border-white/10">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5">
+            <span className="text-white font-bold tracking-wide">भारत सरकार</span>
+            <span className="opacity-50">|</span>
+            <span className="tracking-wide">GOVERNMENT OF INDIA</span>
+          </span>
+        </div>
+        <div className="hidden md:flex items-center gap-4 text-[10px] tracking-wider uppercase">
+          <span>Ministry of Statistics and Programme Implementation (MoSPI)</span>
+        </div>
+      </div>
+
+      {/* Background Texture & Gradient */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black" />
         <div 
-          className="absolute inset-0 opacity-[0.07]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: `radial-gradient(#0f172a 1.2px, transparent 1.2px)`,
-            backgroundSize: "24px 24px"
+            backgroundImage: `radial-gradient(#ffffff 1.2px, transparent 1.2px)`,
+            backgroundSize: "32px 32px"
           }}
         />
+        {/* Subtle accent glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gov-blue-600/20 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex p-3 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 shadow-md mb-2">
-          <Award className="h-12 w-12 text-amber-500 stroke-[1.5]" />
+      <div className="flex-1 flex flex-col justify-center py-12 sm:px-6 lg:px-8 z-10">
+        
+        {/* Header Block */}
+        <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
+          <div className="inline-flex p-4 rounded-2xl bg-white/5 border border-white/10 shadow-2xl mb-4 backdrop-blur-sm">
+            <ShieldCheck className="h-12 w-12 text-gov-gold stroke-[1.5]" />
+          </div>
+          <h2 className="text-center text-3xl font-extrabold tracking-tight text-white uppercase font-sans drop-shadow-sm">
+            SkillStat AI
+          </h2>
+          <p className="mt-2 text-center text-xs text-slate-400 font-semibold uppercase tracking-[0.15em]">
+            Official Statistics Competency Intelligence
+          </p>
         </div>
-        <h2 className="mt-2 text-center text-2xl font-black tracking-tight text-slate-900 uppercase font-sans">
-          MoSPI Competency Platform
-        </h2>
-        <p className="mt-1 text-center text-xs text-slate-500 font-medium uppercase tracking-wider">
-          Official Statistics Learning & Performance Audit Portal
-        </p>
-      </div>
 
-      <div className="relative z-10 mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <Card className="border-white/80 shadow-[0_20px_60px_rgba(15,23,42,0.08)] bg-white/85 backdrop-blur-2xl rounded-2xl ring-1 ring-white/60">
-          <CardContent className="py-8 px-6 sm:px-10">
-            {error && (
-              <Alert variant="destructive" className="mb-6 bg-red-50 border-red-200 text-red-700">
-                <div className="flex gap-2 items-start">
-                  <ShieldAlert className="h-4 w-4 shrink-0 text-red-500 mt-0.5" />
-                  <span>{error}</span>
-                </div>
-              </Alert>
-            )}
-
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="email" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Official Email Address
-                </label>
-                <div className="relative rounded-md shadow-2xs">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-4 w-4 text-slate-400" />
+        {/* Login Card */}
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <Card className="border-0 shadow-[0_20px_60px_rgba(0,0,0,0.5)] bg-white rounded-2xl ring-1 ring-black/5">
+            <CardContent className="py-8 px-6 sm:px-10">
+              {error && (
+                <Alert variant="destructive" className="mb-6 bg-red-50 border-red-200 text-red-700 shadow-inner">
+                  <div className="flex gap-2 items-start">
+                    <ShieldAlert className="h-4 w-4 shrink-0 text-red-500 mt-0.5" />
+                    <span className="font-medium text-sm">{error}</span>
                   </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg bg-slate-50/70 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-gov-blue-500 focus:border-gov-blue-500 focus:bg-white transition-all"
-                    placeholder="employee@mospi.gov.in"
-                  />
-                </div>
-              </div>
+                </Alert>
+              )}
 
-              <div>
-                <label htmlFor="password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Security Password
-                </label>
-                <div className="relative rounded-md shadow-2xs">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-4 w-4 text-slate-400" />
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <div>
+                  <label htmlFor="email" className="block text-[11px] font-extrabold text-slate-600 uppercase tracking-wider mb-1.5">
+                    Official Email Address
+                  </label>
+                  <div className="relative rounded-lg shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <Mail className="h-4 w-4 text-slate-400" />
+                    </div>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-900 text-sm font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-gov-blue-500 focus:border-gov-blue-500 focus:bg-white transition-all"
+                      placeholder="employee@mospi.gov.in"
+                    />
                   </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg bg-slate-50/70 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-gov-blue-500 focus:border-gov-blue-500 focus:bg-white transition-all"
-                    placeholder="••••••••"
-                  />
                 </div>
-              </div>
 
-              <div>
-                <Button
-                  type="submit"
-                  className="w-full py-2.5 bg-gov-blue-500 hover:bg-gov-blue-600 text-white font-bold rounded-lg shadow-md hover:shadow-lg focus:ring-gov-blue-500 transition-all"
-                  isLoading={loading}
-                >
-                  Verify Credentials & Enter
-                </Button>
-              </div>
-            </form>
-
-            {DEMO_MODE && (
-              <div className="mt-8 border-t border-slate-200 pt-6">
-                <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
-                  <span className="bg-white px-3 text-slate-400">Fast-Track Demo Access</span>
+                <div>
+                  <label htmlFor="password" className="block text-[11px] font-extrabold text-slate-600 uppercase tracking-wider mb-1.5">
+                    Security Password
+                  </label>
+                  <div className="relative rounded-lg shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <Lock className="h-4 w-4 text-slate-400" />
+                    </div>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-900 text-sm font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-gov-blue-500 focus:border-gov-blue-500 focus:bg-white transition-all"
+                      placeholder="••••••••"
+                    />
+                  </div>
                 </div>
-                <div className="mt-4">
-                  <button
-                    onClick={handleDemoLogin}
-                    disabled={loading}
-                    className="w-full flex items-center justify-center px-4 py-2.5 border border-dashed border-gov-blue-300 rounded-lg shadow-2xs text-xs font-bold text-gov-blue-600 bg-gov-blue-50/60 hover:bg-gov-blue-50 hover:border-gov-blue-400 focus:outline-none transition-colors"
+
+                <div>
+                  <Button
+                    type="submit"
+                    className="w-full py-3 bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg focus:ring-offset-2 focus:ring-gov-blue-500 transition-all text-sm uppercase tracking-wide"
+                    isLoading={loading}
                   >
-                    Auto-Login as Ramesh Chandra (Statistical Officer)
-                  </button>
-                  <p className="mt-2 text-center text-[10px] text-slate-500 leading-normal">
-                    Loads default data: 72.4% Readiness, 2.3 Sampling Gap, and iGOT recommendations matching gaps.
-                  </p>
+                    Verify Credentials & Enter
+                  </Button>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </form>
+
+              {DEMO_MODE && (
+                <div className="mt-8 border-t border-slate-100 pt-6">
+                  <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-extrabold mb-4">
+                    <span className="bg-white px-3 text-slate-400">Fast-Track Access</span>
+                  </div>
+                  <div>
+                    <button
+                      onClick={handleDemoLogin}
+                      disabled={loading}
+                      className="w-full flex items-center justify-center px-4 py-3 border border-dashed border-gov-blue-300 rounded-lg shadow-sm text-xs font-bold text-gov-blue-700 bg-gov-blue-50/50 hover:bg-gov-blue-50 hover:border-gov-blue-500 focus:outline-none transition-all"
+                    >
+                      Auto-Login as Ramesh Chandra (Officer)
+                    </button>
+                    <p className="mt-3 text-center text-[10px] text-slate-500 leading-relaxed font-medium">
+                      Loads default demonstration data: 72.4% Readiness, 2.3 Sampling Gap, and matching iGOT recommendations.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          <p className="text-center text-[10px] text-slate-500 mt-6 font-medium">
+            Protected by MoSPI Security. Unauthorized access is strictly prohibited.
+          </p>
+        </div>
       </div>
     </div>
   )
