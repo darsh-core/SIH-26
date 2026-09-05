@@ -13,6 +13,8 @@ import {
   BarChart3
 } from "lucide-react";
 import { assessmentApi, SubmitAnswerItem } from "../services/assessmentApi";
+import { authApi } from "../services/authApi";
+import { roleApi } from "../services/roleApi";
 import { useAuthStore } from "../store/authStore";
 import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Progress } from "../components/ui/Primitives";
 
@@ -39,9 +41,11 @@ const EVALUATED_COMPETENCIES = [
 export const DiagnosticAssessmentPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
 
-  const assessmentId = searchParams.get("assessment_id") || "2e1fe4bb-22dd-48a0-9ed4-b08ca0730bc6";
+  const [resolvedAssessmentId, setResolvedAssessmentId] = useState<string>(
+    searchParams.get("assessment_id") || ""
+  );
   const roleName = searchParams.get("role_name") || user?.profile?.designation || "Statistical Officer";
   const departmentName = searchParams.get("dept") || user?.profile?.department || "Agricultural Statistics Division";
 
@@ -54,20 +58,45 @@ export const DiagnosticAssessmentPage: React.FC = () => {
   const [analyzingStage, setAnalyzingStage] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Start attempt on load
+  // Auto-initialize diagnostic attempt on load
   useEffect(() => {
     setLoading(true);
-    assessmentApi.startAttempt(assessmentId)
-      .then(res => {
+    setError(null);
+
+    const initAttempt = async () => {
+      try {
+        let activeId = searchParams.get("assessment_id");
+
+        // If no ID or if it's the old placeholder, generate or retrieve a role diagnostic
+        if (!activeId || activeId === "2e1fe4bb-22dd-48a0-9ed4-b08ca0730bc6") {
+          const roleId = user?.profile?.job_role_id;
+          if (roleId) {
+            const diag = await assessmentApi.createRoleDiagnostic(roleId, 6);
+            activeId = diag.assessment_id;
+          } else {
+            const roles = await roleApi.getRoles();
+            const statRole = roles.find(r => r.code === "ROLE_STAT_OFFICER") || roles[0];
+            const diag = await assessmentApi.createRoleDiagnostic(statRole.id, 6);
+            activeId = diag.assessment_id;
+          }
+          setResolvedAssessmentId(activeId);
+        } else {
+          setResolvedAssessmentId(activeId);
+        }
+
+        const res = await assessmentApi.startAttempt(activeId);
         setAttemptId(res.attempt_id);
         setQuestions(res.questions || []);
-      })
-      .catch(err => {
+      } catch (err: any) {
         console.error("Failed to start diagnostic attempt:", err);
         setError("Unable to initiate assessment attempt. Please verify network connection or try again.");
-      })
-      .finally(() => setLoading(false));
-  }, [assessmentId]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAttempt();
+  }, [searchParams, user]);
 
   const handleSelectOption = (questionId: string, optionId: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: optionId }));
@@ -88,17 +117,30 @@ export const DiagnosticAssessmentPage: React.FC = () => {
       selected_option_id: optId
     }));
 
+    const activeId = resolvedAssessmentId || searchParams.get("assessment_id") || "";
+
     try {
       // 1. Submit answers to backend
-      await assessmentApi.submitAnswers(assessmentId, attemptId, formattedAnswers);
+      await assessmentApi.submitAnswers(activeId, attemptId, formattedAnswers);
 
-      // 2. Play sequential calculation transition messages
+      // 2. Refresh user profile in Zustand auth store so has_completed_assessment is now TRUE!
+      try {
+        const updatedUser = await authApi.getMe();
+        updateUser(updatedUser);
+      } catch (e) {
+        console.warn("Could not refresh user profile:", e);
+        if (user) {
+          updateUser({ ...user, has_completed_assessment: true });
+        }
+      }
+
+      // 3. Play sequential calculation transition messages
       setAnalyzingStage(1);
       setTimeout(() => setAnalyzingStage(2), 700);
       setTimeout(() => setAnalyzingStage(3), 1400);
       setTimeout(() => setAnalyzingStage(4), 2100);
       setTimeout(() => {
-        navigate(`/initial-status?assessment_id=${assessmentId}&attempt_id=${attemptId}`);
+        navigate(`/initial-status?assessment_id=${activeId}&attempt_id=${attemptId}`);
       }, 2800);
 
     } catch (err: any) {

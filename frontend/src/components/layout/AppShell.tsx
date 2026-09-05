@@ -15,7 +15,8 @@ import {
   PlusCircle,
   AlertTriangle,
   ShieldCheck,
-  TrendingUp
+  TrendingUp,
+  Lock
 } from "lucide-react"
 
 import { useAuthStore } from "../../store/authStore"
@@ -47,6 +48,8 @@ export const AppShell = ({ children }: AppShellProps) => {
     )
   );
 
+  const isUnassessed = !isTrainerOrStaff && user?.has_completed_assessment === false;
+
   const navItems = isTrainerOrStaff
     ? [
         { name: "Academy Dashboard", path: "/dashboard", icon: LayoutDashboard },
@@ -54,6 +57,16 @@ export const AppShell = ({ children }: AppShellProps) => {
         { name: "Document Matrix", path: "/documents", icon: FileText },
         { name: "Create Assessment", path: "/assessments/create", icon: PlusCircle },
         { name: "Recommendations", path: "/recommendations", icon: BookOpen },
+        { name: "Profile", path: "/profile", icon: User }
+      ]
+    : isUnassessed
+    ? [
+        { name: "Diagnostic Assessment", path: "/onboarding/role", icon: ShieldCheck, isRequired: true },
+        { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard, isLocked: true },
+        { name: "Role Readiness", path: "/role-readiness", icon: ShieldCheck, isLocked: true },
+        { name: "Skill Gaps", path: "/skill-gaps", icon: AlertTriangle, isLocked: true },
+        { name: "iGOT Recommendations", path: "/recommendations", icon: BookOpen, isLocked: true },
+        { name: "Learning Plan", path: "/learning-plan", icon: Map, isLocked: true },
         { name: "Profile", path: "/profile", icon: User }
       ]
     : [
@@ -129,23 +142,47 @@ export const AppShell = ({ children }: AppShellProps) => {
 
         {/* Nav Links */}
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
+          {navItems.map((item: any) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path || (item.path !== "/dashboard" && location.pathname.startsWith(item.path));
+            
+            if (item.isLocked) {
+              return (
+                <div
+                  key={item.name}
+                  className="flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md text-slate-400/60 bg-gov-blue-600/10 cursor-not-allowed select-none opacity-60"
+                  title="Complete initial diagnostic assessment to unlock"
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-4 w-4 shrink-0 text-slate-400/50" />
+                    <span>{item.name}</span>
+                  </div>
+                  <Lock className="h-3.5 w-3.5 text-amber-400/70 shrink-0" />
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.name}
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-all group",
+                  "flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-all group",
                   isActive 
                     ? "bg-gov-gold text-gov-blue-800 shadow-sm font-semibold" 
                     : "text-slate-200 hover:bg-gov-blue-600 hover:text-white"
                 )}
               >
-                <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-gov-blue-800" : "text-slate-300 group-hover:text-white")} />
-                <span>{item.name}</span>
+                <div className="flex items-center gap-3">
+                  <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-gov-blue-800" : "text-slate-300 group-hover:text-white")} />
+                  <span>{item.name}</span>
+                </div>
+                {item.isRequired && (
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-sm bg-amber-500 text-slate-950 shadow-xs">
+                    Required
+                  </span>
+                )}
               </Link>
             );
           })}

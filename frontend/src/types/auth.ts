@@ -24,6 +24,7 @@ export interface AppUser {
   is_superuser?: boolean;
   roles: UserRole[];
   profile?: UserProfile;
+  has_completed_assessment?: boolean;
 }
 
 export interface AuthState {

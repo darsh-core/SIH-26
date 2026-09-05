@@ -39,3 +39,59 @@
 body {
   @apply bg-slate-50 text-slate-900 min-h-screen antialiased font-sans;
 }
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floatSlow1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(50px, 35px) scale(1.15);
+  }
+}
+
+@keyframes floatSlow2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(-45px, -30px) scale(1.1);
+  }
+}
+
+@keyframes floatSlow3 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(35px, -45px) scale(0.95);
+  }
+}
+
+.animate-gradient-shift {
+  background-size: 300% 300%;
+  animation: gradientShift 14s ease infinite;
+}
+
+.animate-float-1 {
+  animation: floatSlow1 14s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: floatSlow2 18s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: floatSlow3 16s ease-in-out infinite;
+}

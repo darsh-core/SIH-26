@@ -163,8 +163,11 @@ class OllamaLLMProvider(LLMProvider):
         self.client = client or OllamaClient()
         self.fallback = MockLLMProvider()
 
+    def is_available(self) -> bool:
+        return self.client.is_available()
+
     def health_check(self) -> Dict[str, Any]:
-        available = self.client.is_available()
+        available = self.is_available()
         model_installed = self.client.check_model_installed() if available else False
         return {
             "provider": "ollama",

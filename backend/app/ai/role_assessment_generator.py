@@ -117,6 +117,13 @@ class RoleDiagnosticGenerator:
         persisted_questions = []
         q_counter = 0
 
+        llm_available = True
+        if hasattr(llm, "is_available"):
+            try:
+                llm_available = llm.is_available()
+            except Exception:
+                llm_available = False
+
         for rc in role_competencies:
             comp = rc.competency
             target_for_comp = questions_per_comp
@@ -140,16 +147,17 @@ class RoleDiagnosticGenerator:
                 )
 
                 generated_mcq = None
-                try:
-                    generated_mcq = llm.generate_structured(prompt, GeneratedMCQ)
-                    generated_mcq.competency_code = comp.code
-                    generated_mcq.difficulty = diff
-                    is_valid, _, _ = MCQValidator.validate(db, generated_mcq, comp.description or comp.name)
-                    if not is_valid:
+                if llm_available:
+                    try:
+                        generated_mcq = llm.generate_structured(prompt, GeneratedMCQ)
+                        generated_mcq.competency_code = comp.code
+                        generated_mcq.difficulty = diff
+                        is_valid, _, _ = MCQValidator.validate(db, generated_mcq, comp.description or comp.name)
+                        if not is_valid:
+                            generated_mcq = None
+                    except Exception as e:
+                        logger.warning(f"Structured role question generation error: {e}")
                         generated_mcq = None
-                except Exception as e:
-                    logger.warning(f"Structured role question generation error: {e}")
-                    generated_mcq = None
 
                 # Fallback to curated question bank if generation was invalid or failed
                 if not generated_mcq:

@@ -220,6 +220,13 @@ class AssessmentService:
                 )
             )
 
+        # Invalidate old pending recommendations so fresh recommendations match new performance gaps
+        from app.models.recommendation import Recommendation
+        db.query(Recommendation).filter(
+            Recommendation.user_id == user_id,
+            Recommendation.status == "PENDING"
+        ).delete()
+
         db.commit()
         db.refresh(attempt)
         

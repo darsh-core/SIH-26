@@ -41,6 +41,7 @@ class UserResponse(BaseModel):
     roles: List[RoleSimpleResponse] = []
     profile: Optional[ProfileSimpleResponse] = None
     created_at: datetime
+    has_completed_assessment: bool = False
 
     class Config:
         from_attributes = True

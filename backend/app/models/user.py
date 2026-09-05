@@ -46,6 +46,19 @@ class AppUser(Base):
     learning_plans: Mapped[list["LearningPlan"]] = relationship("LearningPlan", back_populates="user", cascade="all, delete-orphan")
     audit_logs: Mapped[list["AuditLog"]] = relationship("AuditLog", back_populates="user")
 
+    @property
+    def has_completed_assessment(self) -> bool:
+        if self.is_superuser:
+            return True
+        for role in self.roles:
+            if role.name.upper() in ["TRAINER", "ADMIN", "ADMINISTRATOR"]:
+                return True
+        if self.user_competencies and len(self.user_competencies) > 0:
+            return True
+        if self.attempts and any(a.completed_at is not None for a in self.attempts):
+            return True
+        return False
+
 
 class UserProfile(Base):
     __tablename__ = "user_profile"

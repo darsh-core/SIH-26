@@ -1,5 +1,5 @@
 import React from "react"
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom"
+import { createBrowserRouter, Navigate, Outlet, useLocation } from "react-router-dom"
 
 import { useAuthStore } from "../store/authStore"
 import { AppShell } from "../components/layout/AppShell"
@@ -25,13 +25,31 @@ import { ProgressPage } from "../pages/ProgressPage"
 import { DemoIGOTPlayerPage } from "../pages/DemoIGOTPlayerPage"
 
 // ==========================================
-// ROUTE GUARD (AUTHENTICATED ONLY)
+// ROUTE GUARD (AUTHENTICATED ONLY + ASSESSMENT GATING)
 // ==========================================
 const ProtectedLayout = () => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { isAuthenticated, user } = useAuthStore();
+  const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Check if learner must complete baseline assessment before viewing dashboard
+  const isTrainerOrStaff = Boolean(
+    user?.is_superuser ||
+    user?.roles?.some(r => ["TRAINER", "ADMIN", "ADMINISTRATOR"].includes(r.name?.toUpperCase()))
+  );
+
+  const isAssessmentRoute = 
+    location.pathname.startsWith("/onboarding") ||
+    location.pathname.startsWith("/diagnostic") ||
+    location.pathname.startsWith("/initial-status") ||
+    location.pathname.startsWith("/assessments") ||
+    location.pathname.startsWith("/profile");
+
+  if (!isTrainerOrStaff && user && user.has_completed_assessment === false && !isAssessmentRoute) {
+    return <Navigate to="/onboarding/role" replace />;
   }
 
   return (

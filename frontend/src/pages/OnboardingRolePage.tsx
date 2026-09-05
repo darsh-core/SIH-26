@@ -134,11 +134,11 @@ export const OnboardingRolePage: React.FC = () => {
             <div className="bg-gradient-to-r from-gov-blue-500 via-indigo-900 to-gov-blue-600 text-white p-6 sm:p-8">
               <div className="flex items-center gap-2.5 text-gov-gold mb-2">
                 <ShieldCheck className="w-5 h-5" />
-                <span className="text-xs font-bold uppercase tracking-wider">MoSPI Workforce Onboarding</span>
+                <span className="text-xs font-bold uppercase tracking-wider">MoSPI Baseline Assessment Required</span>
               </div>
-              <h1 className="text-2xl font-extrabold tracking-tight">Tell us about your role</h1>
+              <h1 className="text-2xl font-extrabold tracking-tight">Official Competency Assessment</h1>
               <p className="text-sm text-blue-100/90 mt-1.5 leading-relaxed">
-                We'll use your role and department to build your personalized competency profile.
+                Welcome{user?.profile?.first_name ? `, ${user.profile.first_name}` : ""}! Before accessing the dashboard, all statistical officers must undergo a baseline competency assessment to evaluate your role readiness and calibrate your personalized twin.
               </p>
             </div>
 
