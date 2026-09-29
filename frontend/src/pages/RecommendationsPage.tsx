@@ -453,81 +453,80 @@ export const RecommendationsPage = () => {
                         </span>
                       </div>
 
-                      {/* iGOT Metadata Grid / Duration Bar */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50/80 border border-slate-200/80 rounded-xl p-3 text-xs text-slate-700">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+                      {/* iGOT Metadata Grid / Duration Bar (Unboxed & Increased Font Size) */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-2 text-slate-800">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                            <BookOpen className="w-4 h-4 text-blue-600" />
                           </div>
                           <div>
-                            <span className="text-[10px] text-slate-400 block font-normal">Duration</span>
-                            <span className="font-semibold text-slate-800">{formatDuration(r.estimated_duration_minutes)}</span>
+                            <span className="text-xs text-slate-500 block font-medium">Duration</span>
+                            <span className="text-sm font-bold text-slate-900">{formatDuration(r.estimated_duration_minutes)}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                            <Info className="w-3.5 h-3.5 text-blue-600" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                            <Info className="w-4 h-4 text-blue-600" />
                           </div>
                           <div>
-                            <span className="text-[10px] text-slate-400 block font-normal">Provider</span>
-                            <span className="font-semibold text-slate-800">{r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Greater Noida"}</span>
+                            <span className="text-xs text-slate-500 block font-medium">Provider</span>
+                            <span className="text-sm font-bold text-slate-900">{r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Greater Noida"}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                            <Check className="w-4 h-4 text-emerald-600" />
                           </div>
                           <div>
-                            <span className="text-[10px] text-slate-400 block font-normal">Target Level</span>
-                            <span className="font-semibold text-slate-800">Level {r.difficulty === "Advanced" ? "4.0" : "3.0"}</span>
+                            <span className="text-xs text-slate-500 block font-medium">Target Level</span>
+                            <span className="text-sm font-bold text-slate-900">Level {r.difficulty === "Advanced" ? "4.0" : "3.0"}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                            <Sparkles className="w-4 h-4 text-amber-500" />
                           </div>
                           <div>
-                            <span className="text-[10px] text-slate-400 block font-normal">Licensing</span>
-                            <span className="font-semibold text-slate-800">Free · CC BY 4.0</span>
+                            <span className="text-xs text-slate-500 block font-medium">Licensing</span>
+                            <span className="text-sm font-bold text-slate-900">Free · CC BY 4.0</span>
                           </div>
                         </div>
                       </div>
 
-
-                      {/* Competency Gap Pill */}
+                      {/* Competency Gap Details (Unboxed & Increased Font Size) */}
                       {gap && (
-                        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3 space-y-2 text-xs">
+                        <div className="py-2.5 space-y-2.5 text-sm border-t border-slate-100">
                           <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-slate-500 font-medium">Gap Competency:</span>
-                              <span className="font-bold text-blue-900 bg-white px-2 py-0.5 rounded border border-blue-200">{gap.code}</span>
+                            <div className="flex items-center gap-2.5">
+                              <span className="text-slate-600 font-semibold text-sm sm:text-base">Gap Competency:</span>
+                              <span className="font-extrabold text-blue-900 text-sm sm:text-base">{gap.code}</span>
                             </div>
-                            <div className="flex items-center gap-3 text-right">
-                              <span className="text-slate-600">Current: <strong className="text-slate-900">{gap.current_level}</strong></span>
-                              <span className="text-slate-600">Required: <strong className="text-slate-900">{gap.required_level}</strong></span>
-                              <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                            <div className="flex items-center gap-4 text-sm sm:text-base">
+                              <span className="text-slate-600">Current: <strong className="text-slate-900 font-bold">{gap.current_level}</strong></span>
+                              <span className="text-slate-600">Required: <strong className="text-slate-900 font-bold">{gap.required_level}</strong></span>
+                              <span className="text-rose-600 font-extrabold">
                                 Gap: -{(gap.required_level - gap.current_level).toFixed(1)}
                               </span>
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-blue-100">
-                            <span className="text-[10px] font-semibold text-slate-400">Target Competencies:</span>
-                            <span className="text-[10px] font-semibold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                          <div className="flex flex-wrap items-center gap-2 pt-1">
+                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Target Competencies:</span>
+                            <span className="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                               Domain · Statistical Methodology
                             </span>
-                            <span className="text-[10px] font-semibold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                            <span className="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                               MoSPI Cadre · {data.role}
                             </span>
                           </div>
                         </div>
                       )}
 
-                      {/* AI Rationale */}
-                      <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                      {/* AI Rationale (Increased Font Size) */}
+                      <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal pt-1">
                         {r.reason}
                       </p>
 
