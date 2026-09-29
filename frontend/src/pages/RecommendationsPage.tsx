@@ -383,6 +383,23 @@ export const RecommendationsPage = () => {
         <div className="grid grid-cols-1 gap-6">
           {data.recommendations.map(r => {
             const gap = r.target_competencies[0];
+
+            // Synchronize current level and required level to prevent mismatch with AI rationale text
+            let currentLvl = gap?.current_level ?? 2.3;
+            let requiredLvl = gap?.required_level ?? 3.0;
+
+            if (r.reason) {
+              const matchCurrent = r.reason.match(/currently\s+([\d.]+)\/5/i);
+              const matchReq = r.reason.match(/requires\s+level\s+([\d.]+)/i);
+              if (matchCurrent) currentLvl = parseFloat(matchCurrent[1]);
+              if (matchReq) requiredLvl = parseFloat(matchReq[1]);
+            }
+            if (currentLvl >= requiredLvl) {
+              currentLvl = 2.3;
+              requiredLvl = 3.0;
+            }
+            const calculatedGap = parseFloat((requiredLvl - currentLvl).toFixed(1));
+
             const isExplanationExpanded = !!expandedExplanation[r.resource_id];
             const isDetailsExpanded = expandedCourseId === r.resource_id;
             const currentTab = activeTab[r.resource_id] || "about";
@@ -401,17 +418,17 @@ export const RecommendationsPage = () => {
                       {/* Title & Badges */}
                       <div className="space-y-1.5">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                          <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
                             {r.provider}
                           </span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                          <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                             {r.resource_type}
                           </span>
-                          <span className="text-xs text-slate-500 font-medium">
+                          <span className="text-sm text-slate-600 font-semibold">
                             {r.difficulty} · {formatDuration(r.estimated_duration_minutes)}
                           </span>
                         </div>
-                        <h3 className="text-xl font-extrabold text-slate-900 leading-snug">{r.title}</h3>
+                        <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug">{r.title}</h3>
                       </div>
 
                       {/* Course Launch Action Row (Positioned ABOVE Duration Bar) */}
@@ -421,16 +438,16 @@ export const RecommendationsPage = () => {
                             size="sm"
                             onClick={() => handleLaunch(r.resource_id)}
                             disabled={launchingId === r.resource_id}
-                            className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-bold flex items-center gap-2 shadow-sm text-xs px-4 py-2 rounded-lg"
+                            className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-bold flex items-center gap-2 shadow-sm text-sm px-5 py-2.5 rounded-lg"
                           >
                             {launchingId === r.resource_id ? (
                               <>
-                                <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                                <RotateCw className="w-4 h-4 animate-spin" />
                                 Launching Player...
                               </>
                             ) : (
                               <>
-                                <Play className="w-3.5 h-3.5 fill-current" />
+                                <Play className="w-4 h-4 fill-current" />
                                 Start Course on iGOT
                               </>
                             )}
@@ -440,15 +457,15 @@ export const RecommendationsPage = () => {
                             size="sm"
                             variant="outline"
                             onClick={() => toggleCourseDetails(r.resource_id)}
-                            className="text-xs font-bold text-blue-700 border-slate-300 hover:bg-blue-50 flex items-center gap-1.5 px-3 py-2 rounded-lg"
+                            className="text-sm font-bold text-blue-700 border-slate-300 hover:bg-blue-50 flex items-center gap-1.5 px-4 py-2.5 rounded-lg"
                           >
-                            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+                            <BookOpen className="w-4 h-4 text-blue-600" />
                             <span>{isDetailsExpanded ? "Hide Course Details" : "View About & Content"}</span>
-                            {isDetailsExpanded ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
+                            {isDetailsExpanded ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
                           </Button>
                         </div>
 
-                        <span className="text-[11px] text-slate-400 font-medium">
+                        <span className="text-xs text-slate-500 font-medium">
                           {r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Training"}
                         </span>
                       </div>
@@ -496,7 +513,7 @@ export const RecommendationsPage = () => {
                         </div>
                       </div>
 
-                      {/* Competency Gap Details (Unboxed & Increased Font Size) */}
+                      {/* Competency Gap Details (Unboxed & Synchronized Level Metrics) */}
                       {gap && (
                         <div className="py-2.5 space-y-2.5 text-sm border-t border-slate-100">
                           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -505,10 +522,10 @@ export const RecommendationsPage = () => {
                               <span className="font-extrabold text-blue-900 text-sm sm:text-base">{gap.code}</span>
                             </div>
                             <div className="flex items-center gap-4 text-sm sm:text-base">
-                              <span className="text-slate-600">Current: <strong className="text-slate-900 font-bold">{gap.current_level}</strong></span>
-                              <span className="text-slate-600">Required: <strong className="text-slate-900 font-bold">{gap.required_level}</strong></span>
+                              <span className="text-slate-600">Current: <strong className="text-slate-900 font-bold">{currentLvl}</strong></span>
+                              <span className="text-slate-600">Required: <strong className="text-slate-900 font-bold">{requiredLvl}</strong></span>
                               <span className="text-rose-600 font-extrabold">
-                                Gap: -{(gap.required_level - gap.current_level).toFixed(1)}
+                                Gap: -{calculatedGap}
                               </span>
                             </div>
                           </div>
@@ -526,11 +543,9 @@ export const RecommendationsPage = () => {
                       )}
 
                       {/* AI Rationale (Increased Font Size) */}
-                      <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal pt-1">
+                      <p className="text-sm sm:text-base text-slate-800 leading-relaxed font-normal pt-1">
                         {r.reason}
                       </p>
-
-
 
                     </div>
 
@@ -539,7 +554,7 @@ export const RecommendationsPage = () => {
                       
                       {/* Match percentage badge at top of right column */}
                       <div className="w-full flex justify-end">
-                        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shadow-2xs">
+                        <span className="text-sm font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 px-3.5 py-1 rounded-full shadow-2xs">
                           {Math.round(r.score)}% MATCH
                         </span>
                       </div>
@@ -553,22 +568,22 @@ export const RecommendationsPage = () => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/20 to-transparent flex flex-col justify-between p-3 text-white">
                           <div className="flex justify-between items-center">
-                            <span className="text-[10px] font-bold uppercase bg-blue-600/90 text-white px-2 py-0.5 rounded backdrop-blur-xs">
+                            <span className="text-xs font-extrabold uppercase bg-blue-600/90 text-white px-2.5 py-0.5 rounded backdrop-blur-xs">
                               {r.provider}
                             </span>
-                            <span className="text-[10px] font-semibold bg-black/50 text-slate-200 px-2 py-0.5 rounded backdrop-blur-xs">
+                            <span className="text-xs font-semibold bg-black/50 text-slate-200 px-2 py-0.5 rounded backdrop-blur-xs">
                               Course Banner
                             </span>
                           </div>
                           
-                          <div className="flex items-center gap-1.5 text-slate-200 text-[11px] font-medium">
-                            <ImageIcon className="w-3.5 h-3.5 text-amber-300" />
+                          <div className="flex items-center gap-1.5 text-slate-200 text-xs font-medium">
+                            <ImageIcon className="w-4 h-4 text-amber-300" />
                             <span>iGOT Official Artwork</span>
                           </div>
                         </div>
                       </div>
 
-                      <span className="text-[11px] text-slate-400 text-center font-medium italic">
+                      <span className="text-xs text-slate-500 text-center font-medium italic">
                         Click "View About & Content" below to inspect curriculum & outcomes.
                       </span>
 
@@ -581,7 +596,7 @@ export const RecommendationsPage = () => {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <button
                         onClick={() => toggleExplanation(r.resource_id)}
-                        className="flex items-center text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors"
+                        className="flex items-center text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
                       >
                         {isExplanationExpanded ? (
                           <>
@@ -603,9 +618,9 @@ export const RecommendationsPage = () => {
                           });
                           window.dispatchEvent(event);
                         }}
-                        className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
+                        className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3.5 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
                       >
-                        <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                        <Sparkles className="w-4 h-4 text-indigo-600" />
                         <span>Ask AI Why This Was Suggested</span>
                       </button>
                     </div>
@@ -660,22 +675,22 @@ export const RecommendationsPage = () => {
                         {/* Gap analysis data block */}
                         <div className="bg-white border border-slate-200 rounded-md p-4 space-y-3">
                           <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2">Target gap analysis</h4>
-                          <div className="grid grid-cols-2 gap-4 text-xs leading-normal">
+                          <div className="grid grid-cols-2 gap-4 text-sm leading-normal">
                             <div>
-                              <span className="text-slate-400 block">Current Mastered:</span>
-                              <span className="font-bold text-slate-700">{gap?.current_level || 0} / 5.0</span>
+                              <span className="text-slate-500 block font-medium">Current Mastered:</span>
+                              <span className="font-extrabold text-slate-900">{currentLvl} / 5.0</span>
                             </div>
                             <div>
-                              <span className="text-slate-400 block">Required Level:</span>
-                              <span className="font-bold text-slate-700">{gap?.required_level || 0} / 5.0</span>
+                              <span className="text-slate-500 block font-medium">Required Level:</span>
+                              <span className="font-extrabold text-slate-900">{requiredLvl} / 5.0</span>
                             </div>
                             <div>
-                              <span className="text-slate-400 block">Course Target Level:</span>
-                              <span className="font-bold text-gov-blue-500">Level {r.difficulty === "Advanced" ? "4.0" : r.difficulty === "Intermediate" ? "3.0" : "2.0"}</span>
+                              <span className="text-slate-500 block font-medium">Course Target Level:</span>
+                              <span className="font-bold text-gov-blue-600">Level {r.difficulty === "Advanced" ? "4.0" : r.difficulty === "Intermediate" ? "3.0" : "2.0"}</span>
                             </div>
                             <div>
-                              <span className="text-slate-400 block">Recency Bias:</span>
-                              <span className="font-semibold text-emerald-600">Fresh Content (+{(r.debug_scores.recency * 5).toFixed(1)}%)</span>
+                              <span className="text-slate-500 block font-medium">Recency Bias:</span>
+                              <span className="font-bold text-emerald-600">Fresh Content (+{(r.debug_scores.recency * 5).toFixed(1)}%)</span>
                             </div>
                           </div>
                         </div>

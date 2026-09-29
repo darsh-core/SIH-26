@@ -37,14 +37,14 @@
 }
 
 html {
-  font-size: 16.5px;
+  font-size: 18.5px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   @apply bg-slate-50 text-slate-900 min-h-screen antialiased font-sans;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   line-height: 1.6;
 }
 
