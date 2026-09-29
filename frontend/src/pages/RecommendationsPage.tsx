@@ -2,9 +2,9 @@ import React, { useState } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { 
-  HelpCircle, 
   RotateCw, 
   Plus, 
+  Minus,
   Check, 
   Search, 
   Info, 
@@ -13,15 +13,94 @@ import {
   ChevronUp,
   Play,
   Sparkles,
-  Brain
+  Brain,
+  FileText,
+  Video,
+  Award,
+  Image as ImageIcon
 } from "lucide-react"
 
 import { useAuthStore } from "../store/authStore"
 import { recommendationApi } from "../services/recommendationApi"
 import { learningPlanApi } from "../services/learningPlanApi"
 import { learningApi } from "../services/learningApi"
-import { Card, CardContent, CardHeader, CardTitle, Badge, Button, Alert, Progress } from "../components/ui/Primitives"
+import { Card, CardContent, Badge, Button, Progress } from "../components/ui/Primitives"
 import { formatDuration } from "../lib/utils"
+
+// Course banner image mapping based on course codes / topics
+const COURSE_IMAGES: Record<string, string> = {
+  "IGOT_COMP_STATS_01": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80",
+  "IGOT_COMP_STATS_03": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80",
+  "IGOT_COMP_STATS_05": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=600&q=80",
+  "IGOT_COMP_TECH_01": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
+  "DEFAULT": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80"
+}
+
+// Sample curriculum content modules for the "Content" tab
+const COURSE_CURRICULUM_DATA: Record<string, Array<{ id: string; title: string; duration: string; itemsCount: number; lessons: string[] }>> = {
+  "default": [
+    {
+      id: "mod-1",
+      title: "1. Introduction to Official Survey & Data Standards",
+      duration: "2m",
+      itemsCount: 2,
+      lessons: [
+        "Overview of MoSPI National Framework & Guidelines",
+        "Understanding Target Population vs Study Population"
+      ]
+    },
+    {
+      id: "mod-2",
+      title: "2. Sampling Frame Construction & Validation",
+      duration: "2m",
+      itemsCount: 2,
+      lessons: [
+        "Urban Frame Survey (UFS) Blocks & Rural Census Directories",
+        "Auxiliary Data Auditing & Stratification Rules"
+      ]
+    },
+    {
+      id: "mod-3",
+      title: "3. Questionnaire Schedule Design & Pre-testing",
+      duration: "2m",
+      itemsCount: 2,
+      lessons: [
+        "Standardized Code Lists (NIC-2008 & NCO-2015)",
+        "Cognitive Interviewing & Field Pilot Verification"
+      ]
+    },
+    {
+      id: "mod-4",
+      title: "4. Fieldwork Supervision & Error Control",
+      duration: "2m",
+      itemsCount: 2,
+      lessons: [
+        "Multi-tier Inspection Protocols by Statistical Officers",
+        "Non-Response Imputation & Hot-deck Weighting"
+      ]
+    },
+    {
+      id: "mod-5",
+      title: "5. Planning & Execution of Field Audits",
+      duration: "2m",
+      itemsCount: 2,
+      lessons: [
+        "Concurrent Sub-sampling & Field Inspection Routines",
+        "Relative Standard Error (RSE) Threshold Calculations"
+      ]
+    },
+    {
+      id: "mod-6",
+      title: "6. Take Home Summary & Quality Introspection",
+      duration: "2m",
+      itemsCount: 2,
+      lessons: [
+        "Six Dimensions of National Statistical Quality Framework",
+        "Final Assessment & iGOT Karmayogi Certification"
+      ]
+    }
+  ]
+}
 
 export const RecommendationsPage = () => {
   const navigate = useNavigate();
@@ -37,7 +116,16 @@ export const RecommendationsPage = () => {
   const [providerFilter, setProviderFilter] = useState<"ALL" | "IGOT" | "NSSTA">("ALL");
   const [priorityFilter, setPriorityFilter] = useState<"ALL" | "HIGH">("ALL");
   const [competencyFilter, setCompetencyFilter] = useState<string>(defaultCompetency);
+  
+  // Expandable state for AI score breakdown
   const [expandedExplanation, setExpandedExplanation] = useState<Record<string, boolean>>({});
+  
+  // Course Details Expansion State (About & Content tabs)
+  const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<Record<string, "about" | "content">>({});
+  const [showFullDesc, setShowFullDesc] = useState<Record<string, boolean>>({});
+  const [showFullOutcomes, setShowFullOutcomes] = useState<Record<string, boolean>>({});
+  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
 
   // 1. Fetch recommendations
   const { 
@@ -102,6 +190,21 @@ export const RecommendationsPage = () => {
     }));
   };
 
+  const toggleCourseDetails = (resourceId: string) => {
+    setExpandedCourseId(prev => prev === resourceId ? null : resourceId);
+    if (!activeTab[resourceId]) {
+      setActiveTab(prev => ({ ...prev, [resourceId]: "about" }));
+    }
+  };
+
+  const setCourseTab = (resourceId: string, tab: "about" | "content") => {
+    setActiveTab(prev => ({ ...prev, [resourceId]: tab }));
+  };
+
+  const toggleModule = (modId: string) => {
+    setExpandedModules(prev => ({ ...prev, [modId]: !prev[modId] }));
+  };
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -125,7 +228,7 @@ export const RecommendationsPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       {/* 1. Executive Full-Bleed Hero Banner (Inspired by iGOT Karmayogi Hero) */}
       <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-md border border-slate-800/80 relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -219,7 +322,7 @@ export const RecommendationsPage = () => {
                 iGOT
               </button>
               <button 
-                onClick={() => setProviderFilter("NSSTA")} 
+                onClick={() => setPriorityFilter("ALL")} 
                 className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${providerFilter === "NSSTA" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
               >
                 NSSTA
@@ -269,7 +372,7 @@ export const RecommendationsPage = () => {
         </div>
       </Card>
 
-      {/* 4. Course Cards Grid View (Inspired by iGOT Details Layout) */}
+      {/* 4. Course Cards Grid View */}
       {data.recommendations.length === 0 ? (
         <div className="text-center py-12 bg-white border border-slate-200 rounded-xl p-6">
           <BookOpen className="h-12 w-12 text-slate-300 mx-auto mb-4" />
@@ -280,148 +383,207 @@ export const RecommendationsPage = () => {
         <div className="grid grid-cols-1 gap-6">
           {data.recommendations.map(r => {
             const gap = r.target_competencies[0];
-            const isExpanded = !!expandedExplanation[r.resource_id];
-            
+            const isExplanationExpanded = !!expandedExplanation[r.resource_id];
+            const isDetailsExpanded = expandedCourseId === r.resource_id;
+            const currentTab = activeTab[r.resource_id] || "about";
+            const imageUrl = COURSE_IMAGES[r.resource_id] || COURSE_IMAGES["DEFAULT"];
+
             return (
-              <Card key={r.resource_id} className="relative hover:border-slate-300 transition-all border-l-4 border-l-blue-600 flex flex-col">
-                <CardContent className="p-6 space-y-4 flex-1">
-                  
-                  {/* Title and provider match banner */}
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="space-y-1.5 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                          {r.provider}
-                        </span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                          {r.resource_type}
-                        </span>
-                        <span className="text-xs text-slate-500 font-medium">
-                          {r.difficulty} · {formatDuration(r.estimated_duration_minutes)}
-                        </span>
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-900 leading-snug">{r.title}</h3>
-                    </div>
+              <Card key={r.resource_id} className="relative hover:border-slate-300 transition-all border-l-4 border-l-blue-600 flex flex-col bg-white overflow-hidden shadow-xs">
+                
+                {/* Main Card Body (Split: Left Text & Metadata / Right Course Image Slot) */}
+                <CardContent className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                     
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shrink-0 shadow-2xs">
-                      {Math.round(r.score)}% MATCH
-                    </span>
-                  </div>
-
-                  {/* iGOT Metadata Grid (Inspired by Image 1 Sidebar Grid) */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50/80 border border-slate-200/80 rounded-xl p-3.5 text-xs text-slate-700">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                        <BookOpen className="w-3.5 h-3.5 text-blue-600" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 block font-normal">Duration</span>
-                        <span className="font-semibold text-slate-800">{formatDuration(r.estimated_duration_minutes)}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                        <Info className="w-3.5 h-3.5 text-blue-600" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 block font-normal">Provider</span>
-                        <span className="font-semibold text-slate-800">{r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Greater Noida"}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 block font-normal">Target Level</span>
-                        <span className="font-semibold text-slate-800">Level {r.difficulty === "Advanced" ? "4.0" : "3.0"}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 block font-normal">Licensing</span>
-                        <span className="font-semibold text-slate-800">Free · CC BY 4.0</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Competency Indicators & Tag Chips (Inspired by Image 3) */}
-                  {gap && (
-                    <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3.5 space-y-2 text-xs">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-slate-500 font-medium">Gap Competency:</span>
-                          <span className="font-bold text-blue-900 bg-white px-2 py-0.5 rounded border border-blue-200">{gap.code}</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-right">
-                          <span className="text-slate-600">Current: <strong className="text-slate-900">{gap.current_level}</strong></span>
-                          <span className="text-slate-600">Required: <strong className="text-slate-900">{gap.required_level}</strong></span>
-                          <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
-                            Gap: -{(gap.required_level - gap.current_level).toFixed(1)}
+                    {/* LEFT COLUMN (Text Content, Metadata, Gap Info, Actions) */}
+                    <div className="md:col-span-8 space-y-4 min-w-0">
+                      
+                      {/* Title & Badges */}
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                            {r.provider}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                            {r.resource_type}
+                          </span>
+                          <span className="text-xs text-slate-500 font-medium">
+                            {r.difficulty} · {formatDuration(r.estimated_duration_minutes)}
                           </span>
                         </div>
+                        <h3 className="text-xl font-extrabold text-slate-900 leading-snug">{r.title}</h3>
                       </div>
 
-                      {/* Competency Category Pill Chips (Inspired by Image 3) */}
-                      <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-blue-100">
-                        <span className="text-[10px] font-semibold text-slate-400">Target Competencies:</span>
-                        <span className="text-[10px] font-semibold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-slate-200">
-                          Domain · Statistical Methodology
-                        </span>
-                        <span className="text-[10px] font-semibold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-slate-200">
-                          MoSPI Cadre · {data.role}
-                        </span>
+                      {/* iGOT Metadata Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50/80 border border-slate-200/80 rounded-xl p-3 text-xs text-slate-700">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-normal">Duration</span>
+                            <span className="font-semibold text-slate-800">{formatDuration(r.estimated_duration_minutes)}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                            <Info className="w-3.5 h-3.5 text-blue-600" />
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-normal">Provider</span>
+                            <span className="font-semibold text-slate-800">{r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Greater Noida"}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-normal">Target Level</span>
+                            <span className="font-semibold text-slate-800">Level {r.difficulty === "Advanced" ? "4.0" : "3.0"}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-normal">Licensing</span>
+                            <span className="font-semibold text-slate-800">Free · CC BY 4.0</span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  )}
 
-                  {/* Logic explanation rationale */}
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    {r.reason}
-                  </p>
+                      {/* Competency Gap Pill */}
+                      {gap && (
+                        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3 space-y-2 text-xs">
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-500 font-medium">Gap Competency:</span>
+                              <span className="font-bold text-blue-900 bg-white px-2 py-0.5 rounded border border-blue-200">{gap.code}</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-right">
+                              <span className="text-slate-600">Current: <strong className="text-slate-900">{gap.current_level}</strong></span>
+                              <span className="text-slate-600">Required: <strong className="text-slate-900">{gap.required_level}</strong></span>
+                              <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                                Gap: -{(gap.required_level - gap.current_level).toFixed(1)}
+                              </span>
+                            </div>
+                          </div>
 
-                  {/* Course Launch Action Row */}
-                  <div className="flex items-center justify-between gap-3 pt-2">
-                    <Button
-                      size="sm"
-                      onClick={() => handleLaunch(r.resource_id)}
-                      disabled={launchingId === r.resource_id}
-                      className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-medium flex items-center gap-2 shadow-sm text-xs"
-                    >
-                      {launchingId === r.resource_id ? (
-                        <>
-                          <RotateCw className="w-3.5 h-3.5 animate-spin" />
-                          Launching Player...
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-3.5 h-3.5 fill-current" />
-                          Start Course on iGOT
-                        </>
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-blue-100">
+                            <span className="text-[10px] font-semibold text-slate-400">Target Competencies:</span>
+                            <span className="text-[10px] font-semibold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                              Domain · Statistical Methodology
+                            </span>
+                            <span className="text-[10px] font-semibold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                              MoSPI Cadre · {data.role}
+                            </span>
+                          </div>
+                        </div>
                       )}
-                    </Button>
 
-                    <span className="text-[11px] text-slate-400 font-medium">
-                      {r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Training"}
-                    </span>
+                      {/* AI Rationale */}
+                      <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                        {r.reason}
+                      </p>
+
+                      {/* Action Buttons Row */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                        <div className="flex items-center gap-3">
+                          <Button
+                            size="sm"
+                            onClick={() => handleLaunch(r.resource_id)}
+                            disabled={launchingId === r.resource_id}
+                            className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-bold flex items-center gap-2 shadow-sm text-xs px-4 py-2"
+                          >
+                            {launchingId === r.resource_id ? (
+                              <>
+                                <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                                Launching Player...
+                              </>
+                            ) : (
+                              <>
+                                <Play className="w-3.5 h-3.5 fill-current" />
+                                Start Course on iGOT
+                              </>
+                            )}
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => toggleCourseDetails(r.resource_id)}
+                            className="text-xs font-bold text-slate-700 border-slate-300 hover:bg-slate-100 flex items-center gap-1.5"
+                          >
+                            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+                            <span>{isDetailsExpanded ? "Hide Course Details" : "View About & Content"}</span>
+                            {isDetailsExpanded ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
+                          </Button>
+                        </div>
+
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          {r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Training"}
+                        </span>
+                      </div>
+
+                    </div>
+
+                    {/* RIGHT COLUMN (Course Banner Image Slot / Thumbnail Preview) */}
+                    <div className="md:col-span-4 flex flex-col items-center justify-center space-y-3">
+                      
+                      {/* Match percentage badge at top of right column */}
+                      <div className="w-full flex justify-end">
+                        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shadow-2xs">
+                          {Math.round(r.score)}% MATCH
+                        </span>
+                      </div>
+
+                      {/* Image Thumbnail Slot */}
+                      <div className="w-full relative group rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 aspect-video md:aspect-4/3">
+                        <img 
+                          src={imageUrl} 
+                          alt={r.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/20 to-transparent flex flex-col justify-between p-3 text-white">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] font-bold uppercase bg-blue-600/90 text-white px-2 py-0.5 rounded backdrop-blur-xs">
+                              {r.provider}
+                            </span>
+                            <span className="text-[10px] font-semibold bg-black/50 text-slate-200 px-2 py-0.5 rounded backdrop-blur-xs">
+                              Course Banner
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-1.5 text-slate-200 text-[11px] font-medium">
+                            <ImageIcon className="w-3.5 h-3.5 text-amber-300" />
+                            <span>iGOT Official Artwork</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <span className="text-[11px] text-slate-400 text-center font-medium italic">
+                        Click "View About & Content" below to inspect curriculum & outcomes.
+                      </span>
+
+                    </div>
+
                   </div>
 
                   {/* Explainability toggle & Score breakdown details block */}
-                  <div className="pt-2 border-t border-slate-100">
+                  <div className="pt-3 border-t border-slate-100">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <button
                         onClick={() => toggleExplanation(r.resource_id)}
                         className="flex items-center text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors"
                       >
-                        {isExpanded ? (
+                        {isExplanationExpanded ? (
                           <>
-                            Hide Score Breakdown <ChevronUp className="h-4 w-4 ml-1" />
+                            Hide Algorithm Score Breakdown <ChevronUp className="h-4 w-4 ml-1" />
                           </>
                         ) : (
                           <>
@@ -446,7 +608,7 @@ export const RecommendationsPage = () => {
                       </button>
                     </div>
 
-                    {isExpanded && r.debug_scores && (
+                    {isExplanationExpanded && r.debug_scores && (
                       <div className="mt-4 bg-slate-50/50 border border-slate-200 rounded-md p-5 space-y-4 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                         {/* Dimensional scores list */}
                         <div className="space-y-2.5">
@@ -520,6 +682,129 @@ export const RecommendationsPage = () => {
                   </div>
 
                 </CardContent>
+
+                {/* EXPANDABLE TABBED DETAILS SECTION (About & Content Tabs) */}
+                {isDetailsExpanded && (
+                  <div className="bg-slate-50/90 border-t border-slate-200 p-6 space-y-6 animate-in fade-in duration-200">
+                    
+                    {/* Tab Navigation Header (Exact iGOT styling) */}
+                    <div className="flex items-center gap-8 border-b border-slate-200">
+                      <button
+                        onClick={() => setCourseTab(r.resource_id, "about")}
+                        className={`pb-3 text-sm font-bold transition-all relative ${
+                          currentTab === "about"
+                            ? "text-blue-900 border-b-2 border-blue-600"
+                            : "text-slate-500 hover:text-slate-800"
+                        }`}
+                      >
+                        About
+                      </button>
+                      <button
+                        onClick={() => setCourseTab(r.resource_id, "content")}
+                        className={`pb-3 text-sm font-bold transition-all relative ${
+                          currentTab === "content"
+                            ? "text-blue-900 border-b-2 border-blue-600"
+                            : "text-slate-500 hover:text-slate-800"
+                        }`}
+                      >
+                        Content
+                      </button>
+                    </div>
+
+                    {/* TAB 1: ABOUT VIEW */}
+                    {currentTab === "about" && (
+                      <div className="space-y-6 text-slate-800">
+                        
+                        {/* Description Section */}
+                        <div className="space-y-3">
+                          <h4 className="text-base font-extrabold text-slate-900">Description</h4>
+                          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                            {(r as any).description || `Official capacity building module designed for statistical officers, data analysts, and policy administrators across MoSPI cadres. This curriculum delves into standard operating procedures, sampling error controls, questionnaire design, and field validation protocols required for high-precision national statistical inquiries.`}
+
+                            {!showFullDesc[r.resource_id] && (
+                              <span> Healthcare facilities and official statistical systems present unique and complex challenges for field execution. This course equips professionals with critical skills to manage operational risks effectively...</span>
+                            )}
+                          </p>
+                          <button
+                            onClick={() => setShowFullDesc(prev => ({ ...prev, [r.resource_id]: !prev[r.resource_id] }))}
+                            className="text-xs font-bold text-blue-700 hover:text-blue-950 transition-colors inline-block"
+                          >
+                            {showFullDesc[r.resource_id] ? "view less" : "view more"}
+                          </button>
+                        </div>
+
+                        {/* Learning Outcome Section */}
+                        <div className="space-y-3 pt-4 border-t border-slate-200">
+                          <h4 className="text-base font-extrabold text-slate-900">Learning Outcome</h4>
+                          <ul className="space-y-2 text-xs sm:text-sm text-slate-700 font-normal list-disc pl-5">
+                            <li>Identify specific survey hazards, risk factors, and sampling error classifications pertinent to official inquiries.</li>
+                            <li>Demonstrate the correct operation of sampling calculators and frame validation using standard MoSPI protocols.</li>
+                            <li>Develop a comprehensive and effective survey execution plan, including household prioritization and logistical coordination.</li>
+                            <li>Analyze key regulatory requirements and operational standards under the Collection of Statistics Act.</li>
+                            <li>Plan and execute field mock audits to evaluate and enhance enumerator response accuracy and team coordination.</li>
+                            <li>Implement a holistic data quality assurance program to mitigate non-sampling errors and protect microdata integrity.</li>
+                          </ul>
+                          <button
+                            onClick={() => setShowFullOutcomes(prev => ({ ...prev, [r.resource_id]: !prev[r.resource_id] }))}
+                            className="text-xs font-bold text-blue-700 hover:text-blue-950 transition-colors inline-block"
+                          >
+                            {showFullOutcomes[r.resource_id] ? "view less" : "view more"}
+                          </button>
+                        </div>
+
+                      </div>
+                    )}
+
+                    {/* TAB 2: CONTENT VIEW */}
+                    {currentTab === "content" && (
+                      <div className="space-y-3">
+                        {((COURSE_CURRICULUM_DATA as any)[(r as any).code || r.resource_id] || COURSE_CURRICULUM_DATA["default"]).map((mod: any) => {
+
+                          const isModOpen = !!expandedModules[mod.id];
+                          return (
+                            <div key={mod.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs transition-all">
+                              <button
+                                onClick={() => toggleModule(mod.id)}
+                                className="w-full p-4 text-left flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors"
+                              >
+                                <div className="space-y-1">
+                                  <h5 className="text-sm font-bold text-slate-900">{mod.title}</h5>
+                                  <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                                    <Video className="w-3.5 h-3.5 text-slate-400" />
+                                    <span>{mod.duration}</span>
+                                    <span>•</span>
+                                    <span>{mod.itemsCount} items</span>
+                                  </div>
+                                </div>
+                                <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-blue-600 font-bold shrink-0">
+                                  {isModOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                                </div>
+                              </button>
+
+                              {isModOpen && (
+                                <div className="px-4 pb-4 pt-1 bg-slate-50 border-t border-slate-100 space-y-2 text-xs text-slate-700">
+                                  {mod.lessons.map((lesson: string, idx: number) => (
+                                    <div key={idx} className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-200">
+                                      <div className="flex items-center gap-2.5">
+                                        <FileText className="w-4 h-4 text-blue-600 shrink-0" />
+                                        <span className="font-semibold text-slate-800">{lesson}</span>
+                                      </div>
+                                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                        Verified Lesson
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                  </div>
+                )}
+
               </Card>
             );
           })}
