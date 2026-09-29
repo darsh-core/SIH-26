@@ -144,12 +144,12 @@ export const AppShell = ({ children }: AppShellProps) => {
       {/* 3. Navigation Sidebar (Desktop & Mobile Drawer container) */}
       <aside 
         className={cn(
-          "bg-slate-900 text-white w-72 flex flex-col border-r border-slate-800 flex-shrink-0 z-20 transition-all duration-200 md:translate-x-0 fixed md:static inset-y-0 left-0",
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          "bg-slate-900 text-white w-72 flex flex-col border-r border-slate-800 shrink-0 z-20 transition-transform duration-200 fixed md:sticky md:top-0 h-screen inset-y-0 left-0",
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         {/* Brand block */}
-        <div className="p-5 border-b border-slate-800/80 hidden md:flex items-center gap-3 bg-slate-950/40">
+        <div className="p-4 border-b border-slate-800/80 hidden md:flex items-center gap-3 bg-slate-950/40 shrink-0">
           <img src={victusLogo} alt="VICTUS 11 Logo" className="h-9 w-auto bg-white p-1 rounded-lg shrink-0 shadow-xs" />
           <div className="min-w-0">
             <h1 className="font-bold leading-tight tracking-wider text-base uppercase text-white">VICTUS 11</h1>
@@ -159,16 +159,16 @@ export const AppShell = ({ children }: AppShellProps) => {
 
         {/* User context card */}
         {user && (
-          <div className="p-4 border-b border-slate-800/80 bg-slate-800/40">
+          <div className="p-3.5 border-b border-slate-800/80 bg-slate-800/40 shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
                 {user.profile?.first_name?.charAt(0) || (user.email?.includes("trainer") ? "S" : "U")}
               </div>
               <div className="min-w-0">
-                <h4 className="text-sm font-semibold text-white truncate">
+                <h4 className="text-xs font-bold text-white truncate">
                   {user.profile?.first_name ? `${user.profile.first_name} ${user.profile.last_name || ""}` : (user.email?.includes("trainer") ? "Dr. Sunita Sharma" : user.email)}
                 </h4>
-                <p className="text-xs text-slate-400 truncate font-normal">
+                <p className="text-[11px] text-slate-400 truncate font-normal">
                   {user.profile?.designation || (user.email?.includes("trainer") ? "Senior Training Director · NSSTA" : "Statistical Staff")}
                 </p>
               </div>
@@ -177,7 +177,7 @@ export const AppShell = ({ children }: AppShellProps) => {
         )}
 
         {/* Nav Links */}
-        <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto min-h-0">
           {navItems.map((item: any) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path || (item.path !== "/dashboard" && location.pathname.startsWith(item.path));
@@ -186,10 +186,10 @@ export const AppShell = ({ children }: AppShellProps) => {
               return (
                 <div
                   key={item.name}
-                  className="flex items-center justify-between px-3.5 py-2.5 text-sm font-medium rounded-lg text-slate-500 bg-slate-800/20 cursor-not-allowed select-none opacity-50"
+                  className="flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-lg text-slate-500 bg-slate-800/20 cursor-not-allowed select-none opacity-50"
                   title="Complete initial diagnostic assessment to unlock"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <Icon className="h-4 w-4 shrink-0 text-slate-500" />
                     <span>{item.name}</span>
                   </div>
@@ -204,18 +204,18 @@ export const AppShell = ({ children }: AppShellProps) => {
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "flex items-center justify-between px-3.5 py-2.5 text-sm font-medium rounded-lg transition-colors group",
+                  "flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-lg transition-colors group",
                   isActive 
-                    ? "bg-blue-600 text-white font-semibold shadow-xs" 
+                    ? "bg-blue-600 text-white font-bold shadow-xs" 
                     : "text-slate-300 hover:bg-slate-800/70 hover:text-white"
                 )}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <Icon className={cn("h-4 w-4 shrink-0 transition-colors", isActive ? "text-white" : "text-slate-400 group-hover:text-white")} />
                   <span>{item.name}</span>
                 </div>
                 {item.isRequired && (
-                  <span className="text-[10px] uppercase font-bold tracking-wide px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                  <span className="text-[9px] uppercase font-bold tracking-wide px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
                     Required
                   </span>
                 )}
@@ -224,19 +224,19 @@ export const AppShell = ({ children }: AppShellProps) => {
           })}
         </nav>
 
-        {/* Footer actions inside Sidebar */}
-        <div className="p-3 border-t border-slate-800/80 space-y-1">
+        {/* Footer actions inside Sidebar (Permanently pinned to bottom) */}
+        <div className="p-3 border-t border-slate-800/80 space-y-1 shrink-0 bg-slate-950/60">
           <Link
             to="/profile"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-3 px-3.5 py-2 text-sm font-medium rounded-lg text-slate-300 hover:bg-slate-800/70 hover:text-white transition-colors"
+            className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold rounded-lg text-slate-300 hover:bg-slate-800/70 hover:text-white transition-colors"
           >
             <HelpCircle className="h-4 w-4 text-slate-400" />
             <span>Help & Support</span>
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3.5 py-2 text-sm font-medium rounded-lg text-rose-400 hover:bg-rose-950/40 hover:text-rose-200 transition-colors"
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold rounded-lg text-rose-400 hover:bg-rose-950/40 hover:text-rose-200 transition-colors cursor-pointer"
           >
             <LogOut className="h-4 w-4 text-rose-400" />
             <span>Sign Out</span>
