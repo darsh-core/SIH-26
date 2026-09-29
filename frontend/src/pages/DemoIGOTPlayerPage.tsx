@@ -222,15 +222,15 @@ export const DemoIGOTPlayerPage: React.FC = () => {
     <div className="fixed inset-0 z-50 bg-slate-100 text-slate-800 flex flex-col font-sans overflow-hidden">
       
       {/* =========================================================
-         TOP CONTROL HEADER (Light Theme with Centered Course Title & Back Button)
+         TOP CONTROL HEADER (Pure White Theme with Centered Course Title & Back Button)
          ========================================================= */}
-      <header className="h-16 bg-slate-900 text-white px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 shadow-md">
+      <header className="h-16 bg-white text-slate-900 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 border-b border-slate-200 shadow-2xs">
         
         {/* Left: Back Button */}
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-xs font-bold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg border border-slate-700 transition-colors"
+            className="flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3.5 py-1.5 rounded-lg border border-slate-300 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
@@ -243,7 +243,7 @@ export const DemoIGOTPlayerPage: React.FC = () => {
             <span className="text-[10px] font-extrabold uppercase tracking-wider bg-blue-600 text-white px-2.5 py-0.5 rounded shrink-0">
               iGOT Karmayogi
             </span>
-            <h1 className="text-sm sm:text-base font-extrabold text-white truncate">
+            <h1 className="text-sm sm:text-base font-extrabold text-slate-900 truncate">
               {course.title}
             </h1>
           </div>
@@ -255,7 +255,7 @@ export const DemoIGOTPlayerPage: React.FC = () => {
             size="sm"
             disabled={activeSection === "lesson" && activeLessonIdx === 0 && activeModuleIdx === 0}
             onClick={handlePrev}
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 text-xs font-bold px-3.5 h-9 gap-1.5"
+            className="bg-white hover:bg-slate-100 text-slate-700 border-slate-300 border text-xs font-bold px-3.5 h-9 gap-1.5"
           >
             <ChevronLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Previous</span>
