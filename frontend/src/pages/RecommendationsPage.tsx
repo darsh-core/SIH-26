@@ -126,46 +126,60 @@ export const RecommendationsPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top action block */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-950">Personalized Learning Recommendations</h1>
-          <p className="text-sm text-slate-500">
-            BRIDGING COMPETENCY GAPS FOR ROLE: <strong className="text-gov-blue-500 font-semibold">{data.role}</strong>
-          </p>
-        </div>
-        <div className="flex gap-3 shrink-0">
-          <Button 
-            variant="outline" 
-            onClick={() => refreshMutation.mutate()} 
-            isLoading={refreshMutation.isPending || isFetching}
-          >
-            <RotateCw className="h-4 w-4 mr-2" />
-            Refresh gap catalog
-          </Button>
-          <Button 
-            variant="primary" 
-            onClick={() => addToPlanMutation.mutate()} 
-            isLoading={addToPlanMutation.isPending}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add all to Learning Journey
-          </Button>
+      {/* 1. Executive Full-Bleed Hero Banner (Inspired by iGOT Karmayogi Hero) */}
+      <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-md border border-slate-800/80 relative overflow-hidden">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-600/30 text-blue-300 border border-blue-500/40">
+                Competency Gap Remediation
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                iGOT & NSSTA Integrated
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Personalized Learning Recommendations
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-300 font-medium">
+              Bridging Target Competency Deficits for Role: <strong className="text-amber-300 font-bold">{data.role}</strong>
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Button 
+              variant="outline" 
+              onClick={() => refreshMutation.mutate()} 
+              isLoading={refreshMutation.isPending || isFetching}
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 text-xs h-10 px-4 gap-2 backdrop-blur-xs"
+            >
+              <RotateCw className="h-3.5 w-3.5" />
+              <span>Refresh Gap Catalog</span>
+            </Button>
+            <Button 
+              onClick={() => addToPlanMutation.mutate()} 
+              isLoading={addToPlanMutation.isPending}
+              className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs h-10 px-4 gap-2 shadow-xs transition-colors"
+            >
+              <Plus className="h-4 w-4 text-slate-950" />
+              <span>Add all to Learning Journey</span>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Real-time AI Gap & Recommendation Assistant Banner */}
-      <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-blue-950 rounded-2xl p-5 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-indigo-500/30">
+      {/* 2. Real-time AI Gap & Recommendation Assistant Banner */}
+      <div className="bg-slate-900 rounded-xl p-5 text-white shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-slate-800">
         <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center shrink-0">
-            <Brain className="w-5 h-5 text-indigo-300" />
+          <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0">
+            <Brain className="w-5 h-5 text-blue-400" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <span>Real-Time AI Skill Gap & Recommendation Explainer</span>
               <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">Live Ollama 3.2</span>
             </h3>
-            <p className="text-xs text-indigo-200 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5 font-normal">
               Ask real-time questions, analyze why specific courses were selected for your role, and receive personalized learning guidance.
             </p>
           </div>
@@ -179,34 +193,34 @@ export const RecommendationsPage = () => {
             });
             window.dispatchEvent(event);
           }}
-          className="bg-white hover:bg-slate-100 text-indigo-950 font-bold text-xs py-2 px-4 rounded-lg shadow-sm flex items-center gap-2 shrink-0 cursor-pointer"
+          className="bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs py-2 px-4 rounded-lg shadow-2xs flex items-center gap-2 shrink-0 cursor-pointer"
         >
-          <Sparkles className="w-4 h-4 text-indigo-600" />
+          <Sparkles className="w-4 h-4 text-blue-600" />
           <span>Ask AI to Analyze My Gaps</span>
         </Button>
       </div>
 
-      {/* Filter Tabs Block */}
-      <Card className="p-4 bg-slate-50 border-slate-200">
+      {/* 3. Filter Controls Block */}
+      <Card className="p-4 bg-slate-50 border-slate-200/90">
         <div className="flex flex-wrap gap-4 items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-500 uppercase">Provider:</span>
-            <div className="flex bg-white border border-slate-200 rounded-md p-1 shadow-2xs">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Provider:</span>
+            <div className="flex bg-white border border-slate-200 rounded-lg p-1 shadow-2xs">
               <button 
                 onClick={() => setProviderFilter("ALL")} 
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${providerFilter === "ALL" ? "bg-gov-blue-500 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${providerFilter === "ALL" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
               >
                 All
               </button>
               <button 
                 onClick={() => setProviderFilter("IGOT")} 
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${providerFilter === "IGOT" ? "bg-gov-blue-500 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${providerFilter === "IGOT" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
               >
                 iGOT
               </button>
               <button 
                 onClick={() => setProviderFilter("NSSTA")} 
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${providerFilter === "NSSTA" ? "bg-gov-blue-500 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${providerFilter === "NSSTA" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
               >
                 NSSTA
               </button>
@@ -214,17 +228,17 @@ export const RecommendationsPage = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-500 uppercase">Priority:</span>
-            <div className="flex bg-white border border-slate-200 rounded-md p-1 shadow-2xs">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Priority:</span>
+            <div className="flex bg-white border border-slate-200 rounded-lg p-1 shadow-2xs">
               <button 
                 onClick={() => setPriorityFilter("ALL")} 
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${priorityFilter === "ALL" ? "bg-gov-blue-500 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${priorityFilter === "ALL" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
               >
                 All Gaps
               </button>
               <button 
                 onClick={() => setPriorityFilter("HIGH")} 
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${priorityFilter === "HIGH" ? "bg-gov-blue-500 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${priorityFilter === "HIGH" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:bg-slate-100"}`}
               >
                 High Priority Gaps Only
               </button>
@@ -241,7 +255,7 @@ export const RecommendationsPage = () => {
               placeholder="Filter by competency code..."
               value={competencyFilter}
               onChange={(e) => setCompetencyFilter(e.target.value)}
-              className="block w-full pl-9 pr-3 py-1.5 border border-slate-200 bg-white rounded-md text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-gov-blue-500 focus:border-gov-blue-500 focus:bg-white text-slate-700"
+              className="block w-full pl-9 pr-3 py-1.5 border border-slate-200 bg-white rounded-lg text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-slate-800"
             />
             {competencyFilter && (
               <button 
@@ -255,9 +269,9 @@ export const RecommendationsPage = () => {
         </div>
       </Card>
 
-      {/* Main Grid View */}
+      {/* 4. Course Cards Grid View (Inspired by iGOT Details Layout) */}
       {data.recommendations.length === 0 ? (
-        <div className="text-center py-12 bg-white border border-slate-200 rounded-lg p-6">
+        <div className="text-center py-12 bg-white border border-slate-200 rounded-xl p-6">
           <BookOpen className="h-12 w-12 text-slate-300 mx-auto mb-4" />
           <h3 className="text-base font-bold text-slate-800">No competency gaps or matching recommendations found.</h3>
           <p className="text-xs text-slate-400 mt-2">Adjust your filters, check active gaps, or reload the gap catalog.</p>
@@ -269,43 +283,100 @@ export const RecommendationsPage = () => {
             const isExpanded = !!expandedExplanation[r.resource_id];
             
             return (
-              <Card key={r.resource_id} className="relative hover:border-slate-300 transition-all border-l-4 border-l-gov-blue-500 flex flex-col">
+              <Card key={r.resource_id} className="relative hover:border-slate-300 transition-all border-l-4 border-l-blue-600 flex flex-col">
                 <CardContent className="p-6 space-y-4 flex-1">
                   
                   {/* Title and provider match banner */}
                   <div className="flex justify-between items-start gap-4">
-                    <div className="space-y-1 min-w-0">
-                      <h3 className="text-base font-bold text-slate-900 leading-snug">{r.title}</h3>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <Badge variant="secondary" className="px-2 py-0">
+                    <div className="space-y-1.5 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
                           {r.provider}
-                        </Badge>
-                        <span className="text-xs text-slate-400 font-semibold uppercase">
+                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                           {r.resource_type}
                         </span>
-                        <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
                         <span className="text-xs text-slate-500 font-medium">
                           {r.difficulty} · {formatDuration(r.estimated_duration_minutes)}
                         </span>
                       </div>
+                      <h3 className="text-lg font-bold text-slate-900 leading-snug">{r.title}</h3>
                     </div>
                     
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shrink-0">
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full shrink-0 shadow-2xs">
                       {Math.round(r.score)}% MATCH
                     </span>
                   </div>
 
-                  {/* Competency indicators mapping */}
-                  {gap && (
-                    <div className="bg-slate-50 border border-slate-100 rounded-md px-4 py-2.5 flex items-center justify-between gap-4 text-xs">
-                      <div>
-                        <span className="text-slate-400 font-medium block">Gap Competency</span>
-                        <span className="font-bold text-slate-700">{gap.code}</span>
+                  {/* iGOT Metadata Grid (Inspired by Image 1 Sidebar Grid) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50/80 border border-slate-200/80 rounded-xl p-3.5 text-xs text-slate-700">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                        <BookOpen className="w-3.5 h-3.5 text-blue-600" />
                       </div>
-                      <div className="flex gap-4 text-right">
-                        <span>Current: <strong className="text-slate-800">{gap.current_level}</strong></span>
-                        <span>Required: <strong className="text-slate-800">{gap.required_level}</strong></span>
-                        <span className="text-rose-600 font-semibold">Gap: -{(gap.required_level - gap.current_level).toFixed(1)}</span>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block font-normal">Duration</span>
+                        <span className="font-semibold text-slate-800">{formatDuration(r.estimated_duration_minutes)}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                        <Info className="w-3.5 h-3.5 text-blue-600" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block font-normal">Provider</span>
+                        <span className="font-semibold text-slate-800">{r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Greater Noida"}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block font-normal">Target Level</span>
+                        <span className="font-semibold text-slate-800">Level {r.difficulty === "Advanced" ? "4.0" : "3.0"}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block font-normal">Licensing</span>
+                        <span className="font-semibold text-slate-800">Free · CC BY 4.0</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Competency Indicators & Tag Chips (Inspired by Image 3) */}
+                  {gap && (
+                    <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3.5 space-y-2 text-xs">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-slate-500 font-medium">Gap Competency:</span>
+                          <span className="font-bold text-blue-900 bg-white px-2 py-0.5 rounded border border-blue-200">{gap.code}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-right">
+                          <span className="text-slate-600">Current: <strong className="text-slate-900">{gap.current_level}</strong></span>
+                          <span className="text-slate-600">Required: <strong className="text-slate-900">{gap.required_level}</strong></span>
+                          <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                            Gap: -{(gap.required_level - gap.current_level).toFixed(1)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Competency Category Pill Chips (Inspired by Image 3) */}
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-blue-100">
+                        <span className="text-[10px] font-semibold text-slate-400">Target Competencies:</span>
+                        <span className="text-[10px] font-semibold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                          Domain · Statistical Methodology
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                          MoSPI Cadre · {data.role}
+                        </span>
                       </div>
                     </div>
                   )}

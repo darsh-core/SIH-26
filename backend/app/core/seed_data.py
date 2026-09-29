@@ -873,8 +873,25 @@ def seed_course_modules_and_lessons(db):
         print(f"  Seeded modules & lessons for: {course.title}")
 
 if __name__ == "__main__":
+    from app.core.database import engine, Base
+    from sqlalchemy import text, JSON
+    import app.models
+    print("Enabling pgvector extension & creating database tables...")
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+            conn.commit()
+    except Exception as e:
+        print("Notice: pgvector extension not present locally. Falling back to standard JSON columns for embeddings.")
+        from app.models.document import DocumentEmbedding
+        DocumentEmbedding.embedding.type = JSON()
+
+    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         seed_database(db)
     finally:
         db.close()
+
+
+

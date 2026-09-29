@@ -59,7 +59,11 @@ class DocumentEmbedding(Base):
     model_name: Mapped[str] = mapped_column(String(100), nullable=False, default="all-MiniLM-L6-v2")
     
     # 384 dimension canonical vector for SentenceTransformer (all-MiniLM-L6-v2)
-    embedding = mapped_column(Vector(384), nullable=False)
+    try:
+        embedding = mapped_column(Vector(384), nullable=True)
+    except Exception:
+        embedding = mapped_column(JSONB, nullable=True)
+
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

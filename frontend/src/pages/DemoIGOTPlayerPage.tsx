@@ -333,14 +333,58 @@ export const DemoIGOTPlayerPage: React.FC = () => {
             /* ==========================================
                INTERACTIVE LESSON CONTENT VIEWER
                ========================================== */
-            <Card className="border-slate-200 bg-white shadow-sm flex flex-col justify-between min-h-[560px]">
-              <div>
-                <CardHeader className="bg-slate-50/70 border-b border-slate-200 p-5 flex flex-row items-center justify-between">
+            /* ==========================================
+               INTERACTIVE LESSON VIDEO & CONTENT VIEWER (Inspired by iGOT Player Screen - Image 2)
+               ========================================== */
+            <div className="space-y-6">
+              {/* Video Player Viewport Container */}
+              <Card className="border-slate-800 bg-slate-950 shadow-md rounded-xl overflow-hidden">
+                <div className="relative aspect-video bg-gradient-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center border-b border-slate-800 group">
+                  
+                  {/* Video Presenter Simulation Viewport */}
+                  <div className="text-center p-6 space-y-3">
+                    <div className="w-20 h-20 rounded-full bg-blue-600/20 border-2 border-blue-500/50 flex items-center justify-center mx-auto shadow-inner text-blue-400">
+                      <Play className="w-8 h-8 fill-current ml-1" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-500/30">
+                        Interactive iGOT Video Lecture · 1080p HD
+                      </span>
+                      <h3 className="text-lg font-bold text-white mt-1.5">{currentLesson?.title || "Introduction to Sampling Methods"}</h3>
+                      <p className="text-xs text-slate-400 font-normal">Instructor: Dr. Ramesh Kumar · Senior Statistical Advisor, MoSPI</p>
+                    </div>
+                  </div>
+
+                  {/* Video Control Scrubber Strip (Inspired by Image 2 Control Bar) */}
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-slate-950/80 to-transparent p-4 flex items-center justify-between gap-4 text-xs text-white">
+                    <div className="flex items-center gap-3">
+                      <button className="p-1.5 hover:bg-white/10 rounded-md transition-colors text-white">
+                        <Play className="w-4 h-4 fill-current" />
+                      </button>
+                      <span className="text-[11px] font-mono text-slate-300">04:12 / {currentLesson?.duration_minutes || 15}:00</span>
+                    </div>
+
+                    {/* Progress Scrubber */}
+                    <div className="flex-1 max-w-md bg-white/20 h-1.5 rounded-full overflow-hidden cursor-pointer">
+                      <div className="bg-blue-500 h-full w-[35%]" />
+                    </div>
+
+                    <div className="flex items-center gap-3 text-slate-300 text-[11px]">
+                      <span className="bg-white/10 px-1.5 py-0.5 rounded font-mono font-semibold">1x</span>
+                      <span className="bg-blue-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px]">HD</span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Lesson Details & MoSPI Takeaways Box (Inspired by Image 2 & 3 Tab Details) */}
+              <Card className="border-slate-200 bg-white shadow-xs">
+                <CardHeader className="bg-slate-50/60 border-b border-slate-200 p-4 flex flex-row items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-gov-blue-600 uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">
                       Module {currentModule?.sequence_order} of {modules.length} · {currentModule?.title}
                     </span>
-                    <h2 className="text-lg font-bold text-slate-900 mt-0.5">
+                    <h2 className="text-base font-bold text-slate-900 mt-0.5">
                       {currentLesson?.title || "Lesson Overview"}
                     </h2>
                   </div>
@@ -352,107 +396,121 @@ export const DemoIGOTPlayerPage: React.FC = () => {
                         Completed
                       </span>
                     ) : (
-                      <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200 flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" />
+                      <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200 flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
                         {currentLesson?.duration_minutes || 15} mins
                       </span>
                     )}
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-6 md:p-8 space-y-6">
-                  {/* Lesson Content Body */}
-                  <div className="prose prose-slate max-w-none text-slate-700 text-sm leading-relaxed space-y-4">
-                    <p className="text-base text-slate-800 font-medium leading-relaxed bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                <CardContent className="p-6 space-y-6">
+                  {/* Lesson Overview Content */}
+                  <div className="space-y-4">
+                    <p className="text-sm text-slate-700 leading-relaxed font-normal bg-slate-50 p-4 rounded-xl border border-slate-200/80">
                       {currentLesson?.content || currentModule?.description || "Welcome to this official learning module."}
                     </p>
 
-                    <div className="space-y-3 pt-2">
-                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                        Key MoSPI Learning Takeaways:
-                      </h4>
-                      <ul className="space-y-2 text-xs text-slate-600 pl-4 list-disc">
-                        <li>Strict adherence to standardized Ministry procedures and sampling frameworks.</li>
-                        <li>Minimizing both sampling variance and non-sampling field collection errors.</li>
-                        <li>Verifying metadata integrity in accordance with national statistical data governance rules.</li>
-                      </ul>
+                    {/* Key MoSPI Takeaways & Competencies (Inspired by Image 3) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                      <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl space-y-2">
+                        <h4 className="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Learning Outcomes</span>
+                        </h4>
+                        <ul className="space-y-1.5 text-xs text-slate-600 pl-4 list-disc font-medium">
+                          <li>Strict adherence to standardized Ministry procedures and sampling frameworks.</li>
+                          <li>Minimizing both sampling variance and non-sampling field collection errors.</li>
+                          <li>Verifying metadata integrity in accordance with national statistical rules.</li>
+                        </ul>
+                      </div>
+
+                      <div className="bg-amber-50/50 border border-amber-100 p-4 rounded-xl space-y-2">
+                        <h4 className="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <Award className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Mapped Target Competency</span>
+                        </h4>
+                        <p className="text-xs text-slate-700 leading-relaxed font-normal">
+                          This module addresses <strong className="text-slate-900">Sampling Methodology (Level 4)</strong> required for target role of <strong className="text-slate-900">Statistical Officer</strong>.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Navigation & Completion Controls Footer */}
+                  <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={activeLessonIdx === 0 && activeModuleIdx === 0}
+                        onClick={() => {
+                          if (activeLessonIdx > 0) {
+                            setActiveLessonIdx(prev => prev - 1);
+                          } else if (activeModuleIdx > 0) {
+                            setActiveModuleIdx(prev => prev - 1);
+                            setActiveLessonIdx(0);
+                          }
+                        }}
+                        className="text-xs h-9 gap-1"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                        <span>Previous</span>
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={activeLessonIdx >= currentLessons.length - 1}
+                        onClick={() => setActiveLessonIdx(prev => prev + 1)}
+                        className="text-xs h-9 gap-1"
+                      >
+                        <span>Next Lesson</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {currentModule && currentModStatus !== "COMPLETED" ? (
+                        <Button
+                          size="sm"
+                          onClick={() => completeModuleMutation.mutate(currentModule.id)}
+                          disabled={completeModuleMutation.isPending}
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs h-9 px-4 gap-1.5 shadow-2xs"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>
+                            {completeModuleMutation.isPending ? "Marking Complete..." : "Mark Module Complete & Continue"}
+                          </span>
+                        </Button>
+                      ) : activeModuleIdx < modules.length - 1 ? (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setActiveModuleIdx(prev => prev + 1);
+                            setActiveLessonIdx(0);
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs h-9 px-4 gap-1"
+                        >
+                          <span>Proceed to Next Module</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => completeCourseMutation.mutate()}
+                          disabled={completeCourseMutation.isPending}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9 px-4 gap-1.5 shadow-xs"
+                        >
+                          <ShieldCheck className="w-4 h-4" />
+                          <span>{completeCourseMutation.isPending ? "Finalizing..." : "Complete Course & Verify"}</span>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
-              </div>
-
-              {/* Action Footer */}
-              <div className="p-5 border-t border-slate-200 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={activeLessonIdx === 0 && activeModuleIdx === 0}
-                    onClick={() => {
-                      if (activeLessonIdx > 0) {
-                        setActiveLessonIdx(prev => prev - 1);
-                      } else if (activeModuleIdx > 0) {
-                        setActiveModuleIdx(prev => prev - 1);
-                        setActiveLessonIdx(0);
-                      }
-                    }}
-                    className="text-xs h-9 gap-1"
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5" />
-                    <span>Previous</span>
-                  </Button>
-
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={activeLessonIdx >= currentLessons.length - 1}
-                    onClick={() => setActiveLessonIdx(prev => prev + 1)}
-                    className="text-xs h-9 gap-1"
-                  >
-                    <span>Next Lesson</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {currentModule && currentModStatus !== "COMPLETED" ? (
-                    <Button
-                      size="sm"
-                      onClick={() => completeModuleMutation.mutate(currentModule.id)}
-                      disabled={completeModuleMutation.isPending}
-                      className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-bold text-xs h-9 px-4 gap-1.5 shadow-2xs"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>
-                        {completeModuleMutation.isPending ? "Marking Complete..." : "Mark Module Complete & Continue"}
-                      </span>
-                    </Button>
-                  ) : activeModuleIdx < modules.length - 1 ? (
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setActiveModuleIdx(prev => prev + 1);
-                        setActiveLessonIdx(0);
-                      }}
-                      className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-bold text-xs h-9 px-4 gap-1"
-                    >
-                      <span>Proceed to Next Module</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      onClick={() => completeCourseMutation.mutate()}
-                      disabled={completeCourseMutation.isPending}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 px-4 gap-1.5 shadow-sm"
-                    >
-                      <ShieldCheck className="w-4 h-4" />
-                      <span>{completeCourseMutation.isPending ? "Finalizing..." : "Complete Course & Verify"}</span>
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card>
+              </Card>
+            </div>
           )}
         </div>
 
