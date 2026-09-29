@@ -246,29 +246,6 @@ export const AppShell = ({ children }: AppShellProps) => {
 
       {/* 4. Main content viewport */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        {/* Desktop Top Header Bar */}
-        <header className="bg-white border-b border-slate-200 px-8 py-3.5 hidden md:flex items-center justify-between shrink-0 shadow-2xs">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-900">MoSPI Skill Intelligence Platform</span>
-            <span className="text-slate-300">|</span>
-            <span className="text-xs text-slate-500 font-medium">iGOT Karmayogi Competency Mapping</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <span className="text-xs text-slate-400 block font-normal">Account</span>
-              <span className="text-xs font-semibold text-slate-700">{user?.email}</span>
-            </div>
-            <div className="w-[1px] h-5 bg-slate-200" />
-            <button 
-              onClick={handleLogout}
-              className="text-slate-400 hover:text-rose-600 transition-colors p-1"
-              title="Sign Out"
-            >
-              <LogOut className="h-4.5 w-4.5" />
-            </button>
-          </div>
-        </header>
-
         {/* App content views */}
         <div className="flex-1 p-6 md:p-8 max-w-[1600px] w-full mx-auto">
           {children}
