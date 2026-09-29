@@ -500,18 +500,18 @@ export const DemoIGOTPlayerPage: React.FC = () => {
                 </div>
 
                 {/* About Section */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-blue-600" />
                     <span>About This Module</span>
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
                     This module establishes core operational procedures for {currentModule?.title} under MoSPI standards. Officers learn to execute sampling inquiry schedules, audit auxiliary boundary changes, and maintain rigorous data quality controls.
                   </p>
                 </div>
 
                 {/* Description Section */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-blue-600" />
                     <span>Operational Description</span>
@@ -527,22 +527,22 @@ export const DemoIGOTPlayerPage: React.FC = () => {
                     <Award className="w-4 h-4 text-amber-500" />
                     <span>Learning Outcomes Mastered</span>
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-start gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
+                    <div className="flex items-start gap-2.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span className="text-xs text-slate-700 font-medium">Design and validate sampling inquiry schedules in accordance with Collection of Statistics rules.</span>
+                      <span className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">Design and validate sampling inquiry schedules in accordance with Collection of Statistics rules.</span>
                     </div>
-                    <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-start gap-3">
+                    <div className="flex items-start gap-2.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span className="text-xs text-slate-700 font-medium">Calculate Probability Proportional to Size (PPS) inclusion weights to minimize sample variance.</span>
+                      <span className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">Calculate Probability Proportional to Size (PPS) inclusion weights to minimize sample variance.</span>
                     </div>
-                    <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-start gap-3">
+                    <div className="flex items-start gap-2.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span className="text-xs text-slate-700 font-medium">Execute multi-tier supervisory inspections and independent household re-interviews.</span>
+                      <span className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">Execute multi-tier supervisory inspections and independent household re-interviews.</span>
                     </div>
-                    <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex items-start gap-3">
+                    <div className="flex items-start gap-2.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span className="text-xs text-slate-700 font-medium">Compute Relative Standard Error (RSE) metrics to audit official report reliability thresholds.</span>
+                      <span className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">Compute Relative Standard Error (RSE) metrics to audit official report reliability thresholds.</span>
                     </div>
                   </div>
                 </div>
