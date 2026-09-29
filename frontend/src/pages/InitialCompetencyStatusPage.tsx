@@ -306,9 +306,15 @@ export const InitialCompetencyStatusPage: React.FC = () => {
                     <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
                       {i + 1}
                     </span>
-                    <Badge variant={gap.priority === "HIGH" ? "error" : "warning"}>
-                      {gap.priority} PRIORITY
-                    </Badge>
+                    {gap.priority === "HIGH" ? (
+                      <Badge variant="error" className="font-bold text-xs px-2.5 py-0.5">HIGH PRIORITY</Badge>
+                    ) : gap.gap > 0 ? (
+                      <Badge variant="warning" className="font-bold text-xs px-2.5 py-0.5">{gap.priority} PRIORITY</Badge>
+                    ) : (
+                      <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-0.5 rounded-full">
+                        Competency Met ✓
+                      </span>
+                    )}
                   </div>
 
                   <div>

@@ -138,41 +138,57 @@ export const SkillGapsPage: React.FC = () => {
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between gap-2">
-                  <Badge variant={gap.priority === "HIGH" ? "error" : (gap.priority === "MEDIUM" ? "warning" : "default")}>
-                    {gap.priority} PRIORITY
-                  </Badge>
+                  {gap.priority === "HIGH" ? (
+                    <Badge variant="error" className="font-extrabold text-xs px-3 py-1">
+                      HIGH PRIORITY
+                    </Badge>
+                  ) : gap.priority === "MEDIUM" ? (
+                    <Badge variant="warning" className="font-extrabold text-xs px-3 py-1">
+                      MEDIUM PRIORITY
+                    </Badge>
+                  ) : gap.priority === "LOW" && gap.gap > 0 ? (
+                    <Badge variant="default" className="font-extrabold text-xs px-3 py-1">
+                      LOW PRIORITY
+                    </Badge>
+                  ) : (
+                    <span className="text-xs font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 px-3 py-1 rounded-full flex items-center gap-1.5">
+                      <CheckCircle className="w-4 h-4 text-emerald-600" />
+                      Competency Met ✓
+                    </span>
+                  )}
+
                   {gap.mandatory && (
-                    <span className="text-[9px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                    <span className="text-xs font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded border border-rose-200">
                       MANDATORY
                     </span>
                   )}
                 </div>
-                <CardTitle className="text-base font-bold text-slate-900 mt-2">
+                <CardTitle className="text-lg font-extrabold text-slate-900 mt-2">
                   {gap.competency_name}
                 </CardTitle>
-                <span className="text-[10px] font-mono text-slate-400 block">{gap.competency_code}</span>
+                <span className="text-xs font-mono text-slate-500 block">{gap.competency_code}</span>
               </CardHeader>
 
               <CardContent className="space-y-4 pt-0">
                 {/* Horizontal Progress */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs text-slate-600 font-medium">
-                    <span>Current: <strong className="text-slate-800">{currentPct}%</strong></span>
-                    <span>Required: <strong className="text-slate-800">{requiredPct}%</strong></span>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm text-slate-700 font-semibold">
+                    <span>Current: <strong className="text-slate-900 font-bold">{currentPct}%</strong></span>
+                    <span>Required: <strong className="text-slate-900 font-bold">{requiredPct}%</strong></span>
                   </div>
-                  <div className="relative h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div className="relative h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
                     <div 
                       className="absolute top-0 bottom-0 bg-slate-300 rounded-full"
                       style={{ width: `${requiredPct}%` }}
                     />
                     <div 
-                      className="absolute top-0 bottom-0 bg-gov-blue-500 rounded-full"
+                      className={`absolute top-0 bottom-0 rounded-full ${gap.gap > 0 ? "bg-gov-blue-600" : "bg-emerald-500"}`}
                       style={{ width: `${currentPct}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-[11px]">
-                    <span className="text-slate-400">Level {gap.current_level} of {gap.required_level}</span>
-                    <span className="font-bold text-rose-600">
+                  <div className="flex justify-between text-xs sm:text-sm pt-0.5">
+                    <span className="text-slate-500 font-medium">Level {gap.current_level} of {gap.required_level}</span>
+                    <span className={`font-extrabold ${gap.gap > 0 ? "text-rose-600" : "text-emerald-600"}`}>
                       {gap.gap > 0 ? `${gapPct}% Deficit` : "Competency Met ✓"}
                     </span>
                   </div>
