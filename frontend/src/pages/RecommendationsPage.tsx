@@ -414,7 +414,46 @@ export const RecommendationsPage = () => {
                         <h3 className="text-xl font-extrabold text-slate-900 leading-snug">{r.title}</h3>
                       </div>
 
-                      {/* iGOT Metadata Grid */}
+                      {/* Course Launch Action Row (Positioned ABOVE Duration Bar) */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 py-1">
+                        <div className="flex items-center gap-3">
+                          <Button
+                            size="sm"
+                            onClick={() => handleLaunch(r.resource_id)}
+                            disabled={launchingId === r.resource_id}
+                            className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-bold flex items-center gap-2 shadow-sm text-xs px-4 py-2 rounded-lg"
+                          >
+                            {launchingId === r.resource_id ? (
+                              <>
+                                <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                                Launching Player...
+                              </>
+                            ) : (
+                              <>
+                                <Play className="w-3.5 h-3.5 fill-current" />
+                                Start Course on iGOT
+                              </>
+                            )}
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => toggleCourseDetails(r.resource_id)}
+                            className="text-xs font-bold text-blue-700 border-slate-300 hover:bg-blue-50 flex items-center gap-1.5 px-3 py-2 rounded-lg"
+                          >
+                            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+                            <span>{isDetailsExpanded ? "Hide Course Details" : "View About & Content"}</span>
+                            {isDetailsExpanded ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
+                          </Button>
+                        </div>
+
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          {r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Training"}
+                        </span>
+                      </div>
+
+                      {/* iGOT Metadata Grid / Duration Bar */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50/80 border border-slate-200/80 rounded-xl p-3 text-xs text-slate-700">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
@@ -457,6 +496,7 @@ export const RecommendationsPage = () => {
                         </div>
                       </div>
 
+
                       {/* Competency Gap Pill */}
                       {gap && (
                         <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3 space-y-2 text-xs">
@@ -491,44 +531,7 @@ export const RecommendationsPage = () => {
                         {r.reason}
                       </p>
 
-                      {/* Action Buttons Row */}
-                      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                        <div className="flex items-center gap-3">
-                          <Button
-                            size="sm"
-                            onClick={() => handleLaunch(r.resource_id)}
-                            disabled={launchingId === r.resource_id}
-                            className="bg-gov-blue-600 hover:bg-gov-blue-700 text-white font-bold flex items-center gap-2 shadow-sm text-xs px-4 py-2"
-                          >
-                            {launchingId === r.resource_id ? (
-                              <>
-                                <RotateCw className="w-3.5 h-3.5 animate-spin" />
-                                Launching Player...
-                              </>
-                            ) : (
-                              <>
-                                <Play className="w-3.5 h-3.5 fill-current" />
-                                Start Course on iGOT
-                              </>
-                            )}
-                          </Button>
 
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => toggleCourseDetails(r.resource_id)}
-                            className="text-xs font-bold text-slate-700 border-slate-300 hover:bg-slate-100 flex items-center gap-1.5"
-                          >
-                            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
-                            <span>{isDetailsExpanded ? "Hide Course Details" : "View About & Content"}</span>
-                            {isDetailsExpanded ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
-                          </Button>
-                        </div>
-
-                        <span className="text-[11px] text-slate-400 font-medium">
-                          {r.provider === "iGOT" ? "Karmayogi Bharat" : "NSSTA Training"}
-                        </span>
-                      </div>
 
                     </div>
 
