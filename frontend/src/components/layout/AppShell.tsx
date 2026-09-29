@@ -99,9 +99,9 @@ export const AppShell = ({ children }: AppShellProps) => {
 
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
       {/* Official Govt Strip */}
-      <div className="bg-[#1a1a1a] text-slate-200 py-2 px-6 text-xs md:text-xs font-semibold flex justify-between items-center z-40 relative">
+      <div className="bg-[#1a1a1a] text-slate-200 py-1.5 px-6 text-xs font-semibold flex justify-between items-center z-40 relative shrink-0">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-2">
             <span className="text-white font-bold tracking-wide">भारत सरकार</span>
@@ -114,9 +114,9 @@ export const AppShell = ({ children }: AppShellProps) => {
         </div>
       </div>
       
-      <div className="flex-1 flex flex-col md:flex-row relative">
+      <div className="flex-1 flex flex-col md:flex-row relative min-h-0 overflow-hidden">
       {/* 1. Header for mobile */}
-      <header className="bg-slate-900 text-white px-5 py-3 flex items-center justify-between md:hidden border-b border-slate-800 shadow-sm z-30">
+      <header className="bg-slate-900 text-white px-5 py-3 flex items-center justify-between md:hidden border-b border-slate-800 shadow-sm z-30 shrink-0">
         <div className="flex items-center gap-2.5">
           <img src={victusLogo} alt="VICTUS 11 Logo" className="h-8 w-auto bg-white p-1 rounded-md shadow-xs" />
           <div>
@@ -144,31 +144,31 @@ export const AppShell = ({ children }: AppShellProps) => {
       {/* 3. Navigation Sidebar (Desktop & Mobile Drawer container) */}
       <aside 
         className={cn(
-          "bg-slate-900 text-white w-72 flex flex-col border-r border-slate-800 shrink-0 z-20 transition-transform duration-200 fixed md:sticky md:top-0 h-screen inset-y-0 left-0",
+          "bg-slate-900 text-white w-72 flex flex-col border-r border-slate-800 shrink-0 z-20 transition-transform duration-200 fixed md:relative h-full inset-y-0 left-0",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         {/* Brand block */}
-        <div className="p-4 border-b border-slate-800/80 hidden md:flex items-center gap-3 bg-slate-950/40 shrink-0">
-          <img src={victusLogo} alt="VICTUS 11 Logo" className="h-9 w-auto bg-white p-1 rounded-lg shrink-0 shadow-xs" />
+        <div className="p-3.5 border-b border-slate-800/80 hidden md:flex items-center gap-3 bg-slate-950/40 shrink-0">
+          <img src={victusLogo} alt="VICTUS 11 Logo" className="h-8 w-auto bg-white p-1 rounded-lg shrink-0 shadow-xs" />
           <div className="min-w-0">
-            <h1 className="font-bold leading-tight tracking-wider text-base uppercase text-white">VICTUS 11</h1>
-            <p className="text-[11px] text-slate-400 leading-tight tracking-wide font-medium">MoSPI Competency & Skill Intelligence</p>
+            <h1 className="font-bold leading-tight tracking-wider text-sm uppercase text-white">VICTUS 11</h1>
+            <p className="text-[10px] text-slate-400 leading-tight tracking-wide font-medium">MoSPI Competency & Skill Intelligence</p>
           </div>
         </div>
 
         {/* User context card */}
         {user && (
-          <div className="p-3.5 border-b border-slate-800/80 bg-slate-800/40 shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+          <div className="p-3 border-b border-slate-800/80 bg-slate-800/40 shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
                 {user.profile?.first_name?.charAt(0) || (user.email?.includes("trainer") ? "S" : "U")}
               </div>
               <div className="min-w-0">
                 <h4 className="text-xs font-bold text-white truncate">
                   {user.profile?.first_name ? `${user.profile.first_name} ${user.profile.last_name || ""}` : (user.email?.includes("trainer") ? "Dr. Sunita Sharma" : user.email)}
                 </h4>
-                <p className="text-[11px] text-slate-400 truncate font-normal">
+                <p className="text-[10px] text-slate-400 truncate font-normal">
                   {user.profile?.designation || (user.email?.includes("trainer") ? "Senior Training Director · NSSTA" : "Statistical Staff")}
                 </p>
               </div>
@@ -177,7 +177,7 @@ export const AppShell = ({ children }: AppShellProps) => {
         )}
 
         {/* Nav Links */}
-        <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto min-h-0">
+        <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto min-h-0">
           {navItems.map((item: any) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path || (item.path !== "/dashboard" && location.pathname.startsWith(item.path));
@@ -186,7 +186,7 @@ export const AppShell = ({ children }: AppShellProps) => {
               return (
                 <div
                   key={item.name}
-                  className="flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-lg text-slate-500 bg-slate-800/20 cursor-not-allowed select-none opacity-50"
+                  className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-500 bg-slate-800/20 cursor-not-allowed select-none opacity-50"
                   title="Complete initial diagnostic assessment to unlock"
                 >
                   <div className="flex items-center gap-2.5">
@@ -204,7 +204,7 @@ export const AppShell = ({ children }: AppShellProps) => {
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-lg transition-colors group",
+                  "flex items-center justify-between px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors group",
                   isActive 
                     ? "bg-blue-600 text-white font-bold shadow-xs" 
                     : "text-slate-300 hover:bg-slate-800/70 hover:text-white"
@@ -224,19 +224,19 @@ export const AppShell = ({ children }: AppShellProps) => {
           })}
         </nav>
 
-        {/* Footer actions inside Sidebar (Permanently pinned to bottom) */}
-        <div className="p-3 border-t border-slate-800/80 space-y-1 shrink-0 bg-slate-950/60">
+        {/* Footer actions inside Sidebar (100% visible and pinned) */}
+        <div className="p-3 border-t border-slate-800/80 space-y-1 shrink-0 bg-slate-950/80">
           <Link
             to="/profile"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold rounded-lg text-slate-300 hover:bg-slate-800/70 hover:text-white transition-colors"
+            className="flex items-center gap-2.5 px-3 py-1.5 text-xs font-bold rounded-lg text-slate-300 hover:bg-slate-800/70 hover:text-white transition-colors"
           >
             <HelpCircle className="h-4 w-4 text-slate-400" />
             <span>Help & Support</span>
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold rounded-lg text-rose-400 hover:bg-rose-950/40 hover:text-rose-200 transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-xs font-bold rounded-lg text-rose-400 hover:bg-rose-950/40 hover:text-rose-200 transition-colors cursor-pointer"
           >
             <LogOut className="h-4 w-4 text-rose-400" />
             <span>Sign Out</span>
@@ -245,7 +245,7 @@ export const AppShell = ({ children }: AppShellProps) => {
       </aside>
 
       {/* 4. Main content viewport */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-slate-50">
         {/* App content views */}
         <div className="flex-1 p-6 md:p-8 max-w-[1600px] w-full mx-auto">
           {children}
